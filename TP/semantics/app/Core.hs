@@ -56,6 +56,9 @@ instance Show Bexp where
 
 type State = M.Map Var Z
 
+getSt :: State -> Var -> Z
+getSt st var = Maybe.fromMaybe 0 (M.lookup var st)
+
 -- Alínea b) ii)
 stUpdate :: State -> Var -> Z -> State
 stUpdate st var v = M.insert var v st
@@ -88,9 +91,6 @@ subBexp y a0 a = case a of
     (And b1 b2) -> And (subBexp y a0 b1) (subBexp y a0 b2)
     (Or b1 b2) -> Or (subBexp y a0 b1) (subBexp y a0 b2)
 
-getSt :: State -> Var -> Z
-getSt st var = Maybe.fromMaybe 0 (M.lookup var st)
-
 arithEval :: Aexp -> (State -> Z)
 arithEval a st = case a of
     Num n -> n
@@ -111,6 +111,7 @@ boolEval b st = case b of
     And b1 b2 -> boolEval b1 st && boolEval b2 st
     Or b1 b2  -> boolEval b1 st || boolEval b2 st
 
+-- Igual ao tipo State, mas com instância de Show legível.
 newtype State' = St {
     getState :: State
 } deriving Eq

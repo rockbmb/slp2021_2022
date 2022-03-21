@@ -10,6 +10,9 @@ import           Data.List ( intercalate )
 import           Core      ( State, Stm(..), State'(St), arithEval, boolEval, stUpdate )
 
 -- Ficha 2
+-- Uma transição em semântica operacional estrutural:
+-- * ou dá origem a um estado (Left)
+-- * ou dá origem a um comando intermédio, juntamente com um novo estado (Right)
 stepSOS :: State -> Stm -> Either State (Stm, State)
 stepSOS st stm = case stm of
     x `Assign` ae ->

@@ -5,6 +5,7 @@ import qualified Data.Map as M
 import Core (Stm (..), State, Aexp (..), Bexp (..))
 import NaturalSemantics
 import StructOpSemantics
+import AbstractMachine1
 
 main :: IO ()
 main = putStrLn "Hello, Haskell!"
