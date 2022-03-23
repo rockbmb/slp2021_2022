@@ -12,8 +12,6 @@ module AbstractMachine2 (
     runStmInAM2
 ) where
 
-import           Debug.Trace                (trace)
-
 import qualified Control.Monad.State.Strict as St
 import qualified Data.Map                   as M
 
@@ -35,13 +33,15 @@ type ProgramCounter = Z
 data EnvStateAM2 = EnvSt2 {
     getEnvSt  :: !Env,
     getNxtAdr :: !NextAddr,
+    getInstrs :: AM2AnnotatedProgram,
     getNxtPC  :: ProgramCounter
 } deriving (Eq)
 
 instance Show EnvStateAM2 where
-    show (EnvSt2 env nxtAdr nxtPc) =
+    show (EnvSt2 env nxtAdr instrs nxtPc) =
         "env: " ++ show env ++ "\n" ++
         "next address: " ++ show nxtAdr ++ "\n" ++
+        "instructions (with pc): " ++ show instrs ++ "\n" ++
         "next program counter (pc): " ++ show nxtPc ++ "\n"
 
 getEnv :: Env -> Var -> Z
@@ -73,28 +73,29 @@ type AM2Code = [AM2Instr]
 
 --copyPasteHelper :: AM2Instr -> St.State EnvStateAM2 AM2Code
 copyPasteHelper ae ae' instr = do
-    code <- aexpToAM2Code ae
+    -- Careful with the order with which this is done - whichever is done first
+    -- puts its code on the stack first, so the second operand has to go first.
     code' <- aexpToAM2Code ae'
-    St.modify' (\(EnvSt2 environ nxtAdr nxtPC) -> EnvSt2 environ nxtAdr (nxtPC + 1))
-    env <- St.get
+    code <- aexpToAM2Code ae
+    St.modify' (\(EnvSt2 environ nxtAdr instrs nxtPC) -> EnvSt2 environ nxtAdr (M.insert nxtPC instr instrs) (nxtPC + 1))
     return $ concat [code', code, [instr]]
 
 aexpToAM2Code :: Aexp -> St.State EnvStateAM2 AM2Code
 aexpToAM2Code a = case a of
     Num n -> do
         let instr = PUSH n
-        St.modify' (\(EnvSt2 environ nxtAdr nxtPC) -> EnvSt2 environ nxtAdr (nxtPC + 1))
+        St.modify' (\(EnvSt2 environ nxtAdr instrs nxtPC) -> EnvSt2 environ nxtAdr (M.insert nxtPC instr instrs) (nxtPC + 1))
         return [instr]
     Var var -> do
-        EnvSt2 environ nxtAdr nxtPC <- St.get
+        EnvSt2 environ nxtAdr instrs nxtPC <- St.get
         case M.lookup var environ of
             Nothing  -> do
                 let instr = GET nxtAdr
-                St.put $ EnvSt2 (M.insert var nxtAdr environ) (nxtAdr + 1) (nxtPC + 1)
+                St.put $ EnvSt2 (M.insert var nxtAdr environ) (nxtAdr + 1) (M.insert nxtPC instr instrs) (nxtPC + 1)
                 return [instr]
             Just adr -> do
                 let instr = GET adr
-                St.put $ EnvSt2 environ nxtAdr (nxtPC + 1)
+                St.put $ EnvSt2 environ nxtAdr (M.insert nxtPC instr instrs) (nxtPC + 1)
                 return [instr]
     ae `Plus` ae' -> copyPasteHelper ae ae' ADD
     ae `Mul` ae' -> copyPasteHelper ae ae' MULT
@@ -104,11 +105,11 @@ bexpToAM2Code :: Bexp -> St.State EnvStateAM2 AM2Code
 bexpToAM2Code b = case b of
     T -> do
         let instr = TRUE
-        St.modify' (\(EnvSt2 environ nxtAdr nxtPC) -> EnvSt2 environ nxtAdr (nxtPC + 1))
+        St.modify' (\(EnvSt2 environ nxtAdr instrs nxtPC) -> EnvSt2 environ nxtAdr (M.insert nxtPC instr instrs) (nxtPC + 1))
         return [instr]
     F -> do
         let instr = FALSE
-        St.modify' (\(EnvSt2 environ nxtAdr nxtPC) -> EnvSt2 environ nxtAdr (nxtPC + 1))
+        St.modify' (\(EnvSt2 environ nxtAdr instrs nxtPC) -> EnvSt2 environ nxtAdr (M.insert nxtPC instr instrs) (nxtPC + 1))
         return [instr]
     ae `Eq` ae' -> copyPasteHelper ae ae' EQUAL
     ae `Le` ae' -> copyPasteHelper ae ae' LE
@@ -117,15 +118,17 @@ bexpToAM2Code b = case b of
     Not be -> do
         code <- bexpToAM2Code be
         let instr = NEG
-        St.modify' (\(EnvSt2 environ nxtAdr nxtPC) -> EnvSt2 environ nxtAdr (nxtPC + 1))
+        St.modify' (\(EnvSt2 environ nxtAdr instrs nxtPC) -> EnvSt2 environ nxtAdr (M.insert nxtPC instr instrs) (nxtPC + 1))
         return $ code ++ [instr]
     be `And` be' -> copyPasteHelper2 be be' AND
     be `Or` be' -> copyPasteHelper2 be be' OR
     where
         copyPasteHelper2 be be' instr = do
-            code <- bexpToAM2Code be
+            -- Careful with the order with which this is done - whichever is done first
+            -- puts its code on the stack first, so the second operand has to go first.
             code' <- bexpToAM2Code be'
-            St.modify' (\(EnvSt2 environ nxtAdr nxtPC) -> EnvSt2 environ nxtAdr (nxtPC + 1))
+            code <- bexpToAM2Code be
+            St.modify' (\(EnvSt2 environ nxtAdr instrs nxtPC) -> EnvSt2 environ nxtAdr (M.insert nxtPC instr instrs) (nxtPC + 1))
             return $ concat [code', code, [instr]]
 
 type Stack = [Either Z Bool]
@@ -146,29 +149,29 @@ type AM2AnnotatedProgram = M.Map ProgramCounter AM2Instr
 
 -- Igual a função evalNS, mas com uso da mónade State.
 whileToAM2 :: Stm -> (AM2Code, EnvStateAM2)
-whileToAM2 stm = St.runState (helper stm) (EnvSt2 M.empty 0 1)
+whileToAM2 stm = St.runState (helper stm) (EnvSt2 M.empty 0 M.empty 1)
     where
         incrCounter = do
-            EnvSt2 e nA nxtPC <- St.get
-            St.put $ EnvSt2 e nA $ nxtPC + 1
+            EnvSt2 e nA is nxtPC <- St.get
+            St.put $ EnvSt2 e nA is $ nxtPC + 1
             return nxtPC
 
         helper :: Stm -> St.State EnvStateAM2 AM2Code
         helper (var `Assign` aexp) = do
             code <- aexpToAM2Code aexp
-            EnvSt2 environ nxtAdr nxtPC <- St.get
+            EnvSt2 environ nxtAdr instrs nxtPC <- St.get
             case M.lookup var environ of
                 Nothing -> do
                     let instr = PUT nxtAdr
-                    St.put $ EnvSt2 (M.insert var nxtAdr environ) (nxtAdr + 1) (nxtPC + 1)
+                    St.put $ EnvSt2 (M.insert var nxtAdr environ) (nxtAdr + 1) (M.insert nxtPC instr instrs) (nxtPC + 1)
                     return $ code ++ [instr]
                 Just n  -> do
                     let instr = PUT n
-                    St.put $ EnvSt2 environ nxtAdr (nxtPC + 1)
+                    St.put $ EnvSt2 environ nxtAdr (M.insert nxtPC instr instrs) (nxtPC + 1)
                     return $ code ++ [instr]
         helper Skip = do
             let instr = NOOP
-            St.modify' (\(EnvSt2 environ nxtAdr nxtPC) -> EnvSt2 environ nxtAdr (nxtPC + 1))
+            St.modify' (\(EnvSt2 environ nxtAdr instrs nxtPC) -> EnvSt2 environ nxtAdr (M.insert nxtPC instr instrs) (nxtPC + 1))
             return [instr]
         helper (c1 `Comp` c2) = do
             code1 <- helper c1
@@ -191,10 +194,11 @@ whileToAM2 stm = St.runState (helper stm) (EnvSt2 M.empty 0 1)
                 elseLabel  = LABEL elseProgCounter
                 jumpToRest = JUMP afterIfProgCounter
                 restLabel  = LABEL afterIfProgCounter
-            EnvSt2 environ nxtAdr _ <- St.get
+            EnvSt2 environ nxtAdr instrs _ <- St.get
+            let jumps = M.fromList [(jzProgCounter, ifJump), (elseProgCounter, jumpToRest), (afterIfProgCounter, restLabel)]
             -- Incrementa-se o contador de código devido ao LABEL final, que apontará
             -- para o código depois do IfThenElse, se existir.
-            St.put $ EnvSt2 environ nxtAdr (afterIfProgCounter + 1)
+            St.put $ EnvSt2 environ nxtAdr (instrs `M.union` jumps) (afterIfProgCounter + 1)
             return $ predCode ++ [ifJump] ++ thenCode ++ [jumpToRest] ++ elseCode ++ [restLabel]
         helper (WhileDo b c) = do
             boolTestCounter <- incrCounter
@@ -207,8 +211,9 @@ whileToAM2 stm = St.runState (helper stm) (EnvSt2 M.empty 0 1)
                 whileJump  = JUMPFALSE afterWhileCounter
                 loopJump   = JUMP boolTestCounter
                 restLabel  = LABEL afterWhileCounter
-            EnvSt2 environ nxtAdr _ <- St.get
-            St.put $ EnvSt2 environ nxtAdr (afterWhileCounter + 1)
+            EnvSt2 environ nxtAdr instrs _ <- St.get
+            let jumps = M.fromList [(boolTestCounter, whileLabel), (jzProgCounter, whileJump), (jumpCounter, loopJump), (afterWhileCounter, restLabel)]
+            St.put $ EnvSt2 environ nxtAdr (instrs `M.union` jumps) (afterWhileCounter + 1)
 
             return $ [whileLabel] ++ predCode ++ [whileJump] ++ loopCode ++ [loopJump] ++ [restLabel]
 
@@ -301,7 +306,7 @@ initConfigAM2 initSt stm =
         (code, envSt) = whileToAM2 stm
 
         environ = getEnvSt envSt
-        annotatedByteCode = M.fromList $ zip [1 .. pred $ getNxtPC envSt] code
+        annotatedByteCode = getInstrs envSt--M.fromList $ zip (M.keys . getInstrs $ envSt) code
 
         memory :: Memory
         memory = M.fromList [(getEnv environ variable, getSt initSt variable) | variable <- M.keys environ]
