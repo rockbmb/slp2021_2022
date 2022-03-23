@@ -14,7 +14,7 @@ main = putStrLn "Hello, Haskell!"
 -- Exemplos de aplicação da ficha 1.
 
 ex1State :: State
-ex1State = M.fromList [("n", 3), ("x", 3), ("y", 2)]
+ex1State = M.fromList [("n", 6), ("x", 3), ("y", 2)]
 
 swap :: Stm
 swap = Comp (Comp c1 c2) c3
