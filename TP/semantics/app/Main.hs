@@ -6,6 +6,7 @@ import Core (Stm (..), State, Aexp (..), Bexp (..))
 import NaturalSemantics
 import StructOpSemantics
 import AbstractMachine1
+import AbstractMachine2
 
 main :: IO ()
 main = putStrLn "Hello, Haskell!"

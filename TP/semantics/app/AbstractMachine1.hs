@@ -1,8 +1,8 @@
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE BangPatterns #-}
 module AbstractMachine1 (
-    EnvState (..),
-    Instr (..),
+    EnvStateAM1 (..),
+    AM1Instr (..),
     AM1Code,
 
     aexpToAM1Code,
@@ -30,7 +30,7 @@ type Env = M.Map Var Z
 
 type NextAddr = Z
 
-data EnvState = EnvSt {
+data EnvStateAM1 = EnvSt {
     getEnvSt :: !Env,
     getNxtAdr :: !NextAddr
 } deriving (Eq, Show)
@@ -38,7 +38,7 @@ data EnvState = EnvSt {
 getEnv :: Env -> Var -> Z
 getEnv e var = e M.! var
 
-data Instr
+data AM1Instr
     = PUSH Z
     | ADD
     | MULT
@@ -59,9 +59,9 @@ data Instr
     | LOOP AM1Code AM1Code
     deriving (Eq, Show)
 
-type AM1Code = [Instr]
+type AM1Code = [AM1Instr]
 
-aexpToAM1Code :: EnvState -> Aexp -> (AM1Code, EnvState)
+aexpToAM1Code :: EnvStateAM1 -> Aexp -> (AM1Code, EnvStateAM1)
 aexpToAM1Code m@(EnvSt e nxtAdr) a = case a of
     Num n -> ([PUSH n], m)
     Var var -> case M.lookup var e of
@@ -81,7 +81,7 @@ aexpToAM1Code m@(EnvSt e nxtAdr) a = case a of
             (code', m'') = aexpToAM1Code m' ae'
         in (concat [code', code, [SUB]], m'')
 
-bexpToAM1Code :: EnvState -> Bexp -> (AM1Code, EnvState)
+bexpToAM1Code :: EnvStateAM1 -> Bexp -> (AM1Code, EnvStateAM1)
 bexpToAM1Code m@(EnvSt e nxtAdr) b = case b of
     T -> ([TRUE], m)
     F -> ([FALSE], m)
@@ -115,10 +115,10 @@ bexpToAM1Code m@(EnvSt e nxtAdr) b = case b of
 
 
 -- Igual a função evalNS, mas com uso da mónade State.
-whileToAM1 :: Stm -> (AM1Code, EnvState)
+whileToAM1 :: Stm -> (AM1Code, EnvStateAM1)
 whileToAM1 stm = St.runState (helper stm) (EnvSt M.empty 0)
     where
-        helper :: Stm -> St.State EnvState AM1Code
+        helper :: Stm -> St.State EnvStateAM1 AM1Code
         helper (var `Assign` aexp) = do
             envSt <- St.get
             let (code, EnvSt e nxtAdr) = aexpToAM1Code envSt aexp
@@ -132,9 +132,7 @@ whileToAM1 stm = St.runState (helper stm) (EnvSt M.empty 0)
                     return $ code ++ [PUT n]
         helper Skip = return [NOOP]
         helper (c1 `Comp` c2) = do
-            envSt1 <- St.get
             code1 <- helper c1
-            envSt2 <- St.get
             code2 <- helper c2
             return $ code1 ++ code2
         helper (IfThenElse b c1 c2) = do
@@ -227,7 +225,7 @@ stepAM1 (c : cs, stack, mem) = case c of
 initConfigAM1 :: State -> Stm -> (AM1Config, Env)
 initConfigAM1 initSt stm =
     let code :: AM1Code
-        envSt :: EnvState
+        envSt :: EnvStateAM1
         (code, envSt) = whileToAM1 stm
 
         environ = getEnvSt envSt

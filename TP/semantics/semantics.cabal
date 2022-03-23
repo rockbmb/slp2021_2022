@@ -29,13 +29,13 @@ executable semantics
                       NaturalSemantics,
                       StructOpSemantics,
 
-                      AbstractMachine1
+                      AbstractMachine1,
+                      AbstractMachine2
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
     build-depends:    base ^>=4.14.3.0,
                       containers >= 0.6,
-                      mtl >= 2,
-                      pretty-simple
+                      mtl >= 2
     hs-source-dirs:   app
     default-language: Haskell2010
