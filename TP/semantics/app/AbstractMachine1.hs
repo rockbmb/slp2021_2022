@@ -217,7 +217,7 @@ stepAM1 (c : cs, stack, mem) = case c of
     BRANCH ins ins' -> case stack of
       Right b : stack' ->
           let instr = if b then ins else ins'
-          in (instr, stack, mem)
+          in (instr, stack', mem)
       _   -> error "BRANCH: invalid stack for operator!"
 
     LOOP ins ins' -> (ins ++ [BRANCH (ins' ++ [LOOP ins ins']) [NOOP]] ++ cs, stack, mem)
