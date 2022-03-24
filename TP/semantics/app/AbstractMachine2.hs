@@ -324,7 +324,9 @@ runStmInAM2 initSt stm =
         run :: AM2Config -> AM2Config
         run !cfg =
             let cfg'@(pc, code, stack, memory) = stepAM2 cfg annotated
-            in if fromInteger pc == (program_length + 1) then cfg else run cfg'
+            -- Here cfg' needs to be the final configuration, and not cfg.
+            -- Causes hard-to-diagnose bugs.
+            in if fromInteger pc == (program_length + 1) then cfg' else run cfg'
         (finalPC, finalCode, finalStack, finalMemory) = run init
 
         varsToValues = M.fromList [(var, finalMemory M.! (environ M.! var)) | var <- M.keys environ]
