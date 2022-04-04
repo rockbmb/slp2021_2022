@@ -113,8 +113,6 @@ bexpToAM1Code m@(EnvSt e nxtAdr) b = case b of
             (code', m'') = bexpToAM1Code m' be'
         in (concat [code', code, [OR]], m'')
 
-
--- Igual a função evalNS, mas com uso da mónade State.
 whileToAM1 :: Stm -> (AM1Code, EnvStateAM1)
 whileToAM1 stm = St.runState (helper stm) (EnvSt M.empty 0)
     where

@@ -147,7 +147,6 @@ type AM2Config = (ProgramCounter, AM2Code, Stack, Memory)
 
 type AM2AnnotatedProgram = M.Map ProgramCounter AM2Instr
 
--- Igual a função evalNS, mas com uso da mónade State.
 whileToAM2 :: Stm -> (AM2Code, EnvStateAM2)
 whileToAM2 stm = St.runState (helper stm) (EnvSt2 M.empty 0 M.empty 1)
     where
