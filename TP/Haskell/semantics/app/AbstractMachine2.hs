@@ -222,11 +222,7 @@ whileToAM2 stm = St.runState (helper stm) (EnvSt2 M.empty 0 M.empty 1)
 -- Requires 
 stepAM2 :: AM2Config -> AM2AnnotatedProgram -> AM2Config
 stepAM2 conf@(_, [], stack, mem) _ = conf
-stepAM2 (pc, c : cs, stack, mem) ann ={-}
-    trace (
-        "code: " ++ show (c : cs) ++ "\n" ++
-        "stack: " ++ show stack
-    ) $ -}case c of
+stepAM2 (pc, c : cs, stack, mem) ann = case c of
     PUSH n -> (pc', cs, Left n : stack, mem)
     ADD -> case stack of
         Left z1 : Left z2 : stack' ->
@@ -280,7 +276,7 @@ stepAM2 (pc, c : cs, stack, mem) ann ={-}
         Nothing    -> error "JUMP: invalid label!"
         Just instr ->
             let instrs = M.elems $ M.dropWhileAntitone (<= lab) ann
-            in {-trace ("instrs: " ++ show (instr : instrs) ++ "\nmem: " ++ show mem)-} (lab, instr : instrs, stack, mem)
+            in (lab, instr : instrs, stack, mem)
     JUMPFALSE lab -> case stack of
         Right b : stack' -> if b
                 then (pc', cs, stack', mem)

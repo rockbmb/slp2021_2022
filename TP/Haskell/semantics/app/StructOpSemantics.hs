@@ -27,8 +27,8 @@ stepSOS st stm = case stm of
         else Right (stm2, st)
     WhileDo be stm' -> Right (IfThenElse be (stm' `Comp` WhileDo be stm') Skip, st)
 
--- Devolve a transição após o número de passos de execução pedido, se for possível,
--- numa lista com todas as transições que lhe precederam.
+-- Devolve a configuração após o número de passos de execução pedido, se for possível,
+-- numa lista com todas as configurações que lhe precederam.
 nstepsSOS :: State -> Stm -> Integer -> [Either State' (Stm, State')]
 nstepsSOS st stm n
     | n <= 0 = []
