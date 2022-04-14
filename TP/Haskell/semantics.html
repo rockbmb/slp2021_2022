@@ -13105,10 +13105,10 @@ div#notebook {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Conte&#250;do:">Conte&#250;do:<a class="anchor-link" href="#Conte&#250;do:">&#182;</a></h2><ol>
 <li><a href="#tipos-de-dados-para-a-linguagem-while">Tipos de dados para a linguagem While</a></li>
-<li><a href="#natural-semantics">Semântica Natural</a></li>
-<li><a href="#structural-operational-semantics">Semântica Operacional Estrutural</a></li>
-<li>Detalhes de Implementação da AM1</li>
-<li>Detalhes de Implementação da AM2</li>
+<li><a href="#avaliação-de-programas-por-semântica-natural">Semântica Natural</a></li>
+<li><a href="#avaliação-de-programas-por-semântica-operacional-estrutural">Semântica Operacional Estrutural</a></li>
+<li><a href="#máquina-abstrata-1-am1">Detalhes de Implementação da AM1</a></li>
+<li><a href="#máquina-abstrata-2-am2">Detalhes de Implementação da AM2</a></li>
 </ol>
 
 </div>
@@ -13126,6 +13126,14 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Tipos-de-dados-para-a-linguagem-While">Tipos de dados para a linguagem While<a class="anchor-link" href="#Tipos-de-dados-para-a-linguagem-While">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Abaixo estão as extensões de Haskell e <code>import</code>s utilizados neste projeto.</p>
+
 </div>
 </div>
 </div>
@@ -13163,6 +13171,14 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Dada a nomenclatura usada na disciplina, definiram-se alguns sinónimos <code>type</code> para mais fácil leitura do código.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
@@ -13171,8 +13187,27 @@ div#notebook {
 <div class=" highlight hl-Haskell"><pre><span></span><span class="kr">type</span> <span class="kt">Z</span> <span class="ow">=</span> <span class="kt">Integer</span>
 
 <span class="kr">type</span> <span class="kt">Var</span> <span class="ow">=</span> <span class="kt">String</span>
+</pre></div>
 
-<span class="kr">data</span> <span class="kt">Aexp</span>
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Vejam-se abaixo os ADTs definidos para expressões aritméticas, e booleanas.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-Haskell"><pre><span></span><span class="kr">data</span> <span class="kt">Aexp</span>
     <span class="ow">=</span> <span class="kt">Num</span> <span class="kt">Z</span>
     <span class="o">|</span> <span class="kt">Var</span> <span class="kt">Var</span>
     <span class="o">|</span> <span class="kt">Aexp</span> <span class="p">`</span><span class="kt">Plus</span><span class="p">`</span> <span class="kt">Aexp</span>
@@ -13208,6 +13243,15 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As funções abaixo estão definidas na biblioteca <code>semantics</code> no módulo <code>Core</code>; as suas assinaturas explicam o seu propósito.</p>
+<p>Num dos exercícios da ficha 1 pedia-se uma função de atualização de estado, chamada aqui de <code>stUpdate</code>.</p>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -13284,7 +13328,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-Haskell"><pre><span></span><span class="kr">data</span> <span class="kt">Stm</span>
+<div class=" highlight hl-Haskell"><pre><span></span><span class="c1">-- ADT para statements da linguagem While</span>
+<span class="kr">data</span> <span class="kt">Stm</span>
     <span class="ow">=</span> <span class="kt">Var</span> <span class="p">`</span><span class="kt">Assign</span><span class="p">`</span> <span class="kt">Aexp</span>
     <span class="o">|</span> <span class="kt">Skip</span>
     <span class="o">|</span> <span class="kt">Stm</span> <span class="p">`</span><span class="kt">Comp</span><span class="p">`</span> <span class="kt">Stm</span>
@@ -13301,14 +13346,14 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Example-programs">Example programs<a class="anchor-link" href="#Example-programs">&#182;</a></h3>
+<h3 id="Programas-e-estado-exemplo">Programas e estado exemplo<a class="anchor-link" href="#Programas-e-estado-exemplo">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Retirados da ficha 1.</p>
+<p>Retirados da ficha 1, e usados para testar as várias funcionalidades desenvolvidas (NS, SOS, AM1, AM2).</p>
 
 </div>
 </div>
@@ -13365,7 +13410,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Natural-Semantics">Natural Semantics<a class="anchor-link" href="#Natural-Semantics">&#182;</a></h2>
+<h2 id="Avalia&#231;&#227;o-de-Programas-por-Sem&#226;ntica-Natural">Avalia&#231;&#227;o de Programas por Sem&#226;ntica Natural<a class="anchor-link" href="#Avalia&#231;&#227;o-de-Programas-por-Sem&#226;ntica-Natural">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -13455,7 +13500,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Structural-Operational-Semantics">Structural Operational Semantics<a class="anchor-link" href="#Structural-Operational-Semantics">&#182;</a></h2>
+<h2 id="Avalia&#231;&#227;o-de-Programas-por-Sem&#226;ntica-Operacional-Estrutural">Avalia&#231;&#227;o de Programas por Sem&#226;ntica Operacional Estrutural<a class="anchor-link" href="#Avalia&#231;&#227;o-de-Programas-por-Sem&#226;ntica-Operacional-Estrutural">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -13464,13 +13509,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-Haskell"><pre><span></span><span class="c1">-- Uma transição em semântica operacional estrutural:</span>
-<span class="c1">-- * ou dá origem a um estado (Left)</span>
-<span class="c1">-- * ou dá origem a um comando intermédio, juntamente com um novo estado (Right)</span>
-<span class="nf">stepSOS</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="kt">Either</span> <span class="kt">State</span> <span class="p">(</span><span class="kt">Stm</span><span class="p">,</span> <span class="kt">State</span><span class="p">)</span>
-
-<span class="c1">-- Devolve a transição após o número de passos de execução pedido, se for possível,</span>
-<span class="c1">-- numa lista com todas as transições que lhe precederam.</span>
+<div class=" highlight hl-Haskell"><pre><span></span><span class="nf">stepSOS</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="kt">Either</span> <span class="kt">State</span> <span class="p">(</span><span class="kt">Stm</span><span class="p">,</span> <span class="kt">State</span><span class="p">)</span>
 <span class="nf">nstepsSOS</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="kt">Integer</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="kt">Either</span> <span class="kt">State&#39;</span> <span class="p">(</span><span class="kt">Stm</span><span class="p">,</span> <span class="kt">State&#39;</span><span class="p">)]</span>
 
 <span class="c1">-- Imprimir uma configuração numa string legível</span>
@@ -13484,6 +13523,30 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Sobre a implementação de SOS em <code>semantics.StructOpSemantics</code>:</p>
+<ul>
+<li><strong>Uma</strong> transição (<code>stepSOS</code>) em semântica operacional estrutural:<ul>
+<li>ou dá origem a um estado (<code>Left</code>)</li>
+<li>ou dá origem a um comando intermédio, juntamente com um novo estado (<code>Right</code>).</li>
+</ul>
+</li>
+<li>Várias transições em SOS (<code>nstepsSOS</code>):<ul>
+<li>devolve a configuração que resulta de dar o número de passos de execução pedido, se for possível</li>
+<li>o resultado é uma lista que também tem todas as transições que precederam a última.</li>
+</ul>
+</li>
+<li>Avaliação de um programa While num dado estado (<code>evalSOS</code>):<ul>
+<li>Retorna um <code>State'</code> definido acima - igual a <code>State</code> mas com instância <code>String</code> legível.</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -13554,7 +13617,22 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Abstract-Machine-1">Abstract Machine 1<a class="anchor-link" href="#Abstract-Machine-1">&#182;</a></h2>
+<h2 id="M&#225;quina-Abstrata-1-(AM1)">M&#225;quina Abstrata 1 (AM1)<a class="anchor-link" href="#M&#225;quina-Abstrata-1-(AM1)">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Os tipos abaixo são usados para implementar AM1 (alguns são reutilizados/modificados para AM2).</p>
+<ul>
+<li>O tipo <code>Env</code> é um mapeamento de variáveis a posições em memória.</li>
+<li>À medida que se compila o código de AM1, vão-se atribuindo posições em memória na primeira ocorrência de cada variável<ul>
+<li>o ADT <code>EnvStateAM1</code> e o tipo <code>NextAddr</code> servem para registar esta informação. Incialmente, o mapeamento tem que ser <code>Map.empty</code>, e o próximo endereço <code>0</code>.</li>
+</ul>
+</li>
+</ul>
+
 </div>
 </div>
 </div>
@@ -13563,9 +13641,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-Haskell"><pre><span></span><span class="c1">-- Mapping from variable names to positions in memory.</span>
-<span class="c1">-- Used during &quot;compilation&quot; of While code to AM1 bytecode.</span>
-<span class="kr">type</span> <span class="kt">Env</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">Var</span> <span class="kt">Z</span>
+<div class=" highlight hl-Haskell"><pre><span></span><span class="kr">type</span> <span class="kt">Env</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">Var</span> <span class="kt">Z</span>
 
 <span class="nf">getEnv</span> <span class="ow">::</span> <span class="kt">Env</span> <span class="ow">-&gt;</span> <span class="kt">Var</span> <span class="ow">-&gt;</span> <span class="kt">Z</span>
 <span class="nf">getEnv</span> <span class="n">e</span> <span class="n">var</span> <span class="ow">=</span> <span class="n">e</span> <span class="kt">M</span><span class="o">.!</span> <span class="n">var</span>
@@ -13576,6 +13652,9 @@ div#notebook {
     <span class="n">getEnvSt</span> <span class="ow">::</span> <span class="o">!</span><span class="kt">Env</span><span class="p">,</span>
     <span class="n">getNxtAdr</span> <span class="ow">::</span> <span class="o">!</span><span class="kt">NextAddr</span>
     <span class="p">}</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Eq</span><span class="p">,</span> <span class="kt">Show</span><span class="p">)</span>
+
+<span class="nf">getEnv</span> <span class="ow">::</span> <span class="kt">Env</span> <span class="ow">-&gt;</span> <span class="kt">Var</span> <span class="ow">-&gt;</span> <span class="kt">Z</span>
+<span class="nf">getEnv</span> <span class="n">e</span> <span class="n">var</span> <span class="ow">=</span> <span class="n">e</span> <span class="kt">M</span><span class="o">.!</span> <span class="n">var</span>
 </pre></div>
 
     </div>
@@ -13588,10 +13667,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-Haskell"><pre><span></span><span class="nf">getEnv</span> <span class="ow">::</span> <span class="kt">Env</span> <span class="ow">-&gt;</span> <span class="kt">Var</span> <span class="ow">-&gt;</span> <span class="kt">Z</span>
-<span class="nf">getEnv</span> <span class="n">e</span> <span class="n">var</span> <span class="ow">=</span> <span class="n">e</span> <span class="kt">M</span><span class="o">.!</span> <span class="n">var</span>
-
-<span class="kr">data</span> <span class="kt">AM1Instr</span>
+<div class=" highlight hl-Haskell"><pre><span></span><span class="kr">data</span> <span class="kt">AM1Instr</span>
     <span class="ow">=</span> <span class="kt">PUSH</span> <span class="kt">Z</span>
     <span class="o">|</span> <span class="kt">ADD</span>
     <span class="o">|</span> <span class="kt">MULT</span>
@@ -13620,6 +13696,16 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>aexpToAM1Code</code> e <code>bexpToAM1Code</code> correspondem a $\mathcal{C}\mathcal{A}$ e $\mathcal{C}\mathcal{B}$, respetivamente.<br>
+Para poderem fazer sempre a associação correta entre variáveis, recebem como argumento um <code>EnvStateAM1</code> que é atualizado e passado às chamadas recursivas.</p>
+<p>Note-se que se poderia fazer uso da mónade <a href="https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-State-Strict.html#t:State"><code>State</code></a>, e de facto, é isto que acontece na implementação de AM2.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
@@ -13628,25 +13714,12 @@ div#notebook {
 <div class=" highlight hl-Haskell"><pre><span></span><span class="nf">aexpToAM1Code</span> <span class="ow">::</span> <span class="kt">EnvStateAM1</span> <span class="ow">-&gt;</span> <span class="kt">Aexp</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">AM1Code</span><span class="p">,</span> <span class="kt">EnvStateAM1</span><span class="p">)</span>
 <span class="nf">aexpToAM1Code</span> <span class="n">m</span><span class="o">@</span><span class="p">(</span><span class="kt">EnvSt</span> <span class="n">e</span> <span class="n">nxtAdr</span><span class="p">)</span> <span class="n">a</span> <span class="ow">=</span> <span class="kr">case</span> <span class="n">a</span> <span class="kr">of</span>
     <span class="kt">Num</span> <span class="n">n</span> <span class="ow">-&gt;</span> <span class="p">([</span><span class="kt">PUSH</span> <span class="n">n</span><span class="p">],</span> <span class="n">m</span><span class="p">)</span>
-    <span class="kt">Var</span> <span class="n">var</span> <span class="ow">-&gt;</span> <span class="kr">case</span> <span class="kt">M</span><span class="o">.</span><span class="n">lookup</span> <span class="n">var</span> <span class="n">e</span> <span class="kr">of</span>
-        <span class="kt">Nothing</span>  <span class="ow">-&gt;</span> <span class="p">([</span><span class="kt">GET</span> <span class="n">nxtAdr</span><span class="p">],</span> <span class="kt">EnvSt</span> <span class="p">(</span><span class="kt">M</span><span class="o">.</span><span class="n">insert</span> <span class="n">var</span> <span class="n">nxtAdr</span> <span class="n">e</span><span class="p">)</span> <span class="p">(</span><span class="n">nxtAdr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="kt">Just</span> <span class="n">adr</span> <span class="ow">-&gt;</span> <span class="p">([</span><span class="kt">GET</span> <span class="n">adr</span><span class="p">],</span> <span class="n">m</span><span class="p">)</span>
-    <span class="n">ae</span> <span class="p">`</span><span class="kt">Plus</span><span class="p">`</span> <span class="n">ae&#39;</span> <span class="ow">-&gt;</span>
-        <span class="kr">let</span> <span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">m&#39;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">aexpToAM1Code</span> <span class="n">m</span> <span class="n">ae</span>
-            <span class="p">(</span><span class="n">code&#39;</span><span class="p">,</span> <span class="n">m&#39;&#39;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">aexpToAM1Code</span> <span class="n">m&#39;</span> <span class="n">ae&#39;</span>
-        <span class="kr">in</span> <span class="p">(</span><span class="n">concat</span> <span class="p">[</span><span class="n">code&#39;</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="p">[</span><span class="kt">ADD</span><span class="p">]],</span> <span class="n">m&#39;&#39;</span><span class="p">)</span>
-    <span class="n">ae</span> <span class="p">`</span><span class="kt">Mul</span><span class="p">`</span> <span class="n">ae&#39;</span> <span class="ow">-&gt;</span>
         <span class="o">...</span>
 
 <span class="nf">bexpToAM1Code</span> <span class="ow">::</span> <span class="kt">EnvStateAM1</span> <span class="ow">-&gt;</span> <span class="kt">Bexp</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">AM1Code</span><span class="p">,</span> <span class="kt">EnvStateAM1</span><span class="p">)</span>
 <span class="nf">bexpToAM1Code</span> <span class="n">m</span><span class="o">@</span><span class="p">(</span><span class="kt">EnvSt</span> <span class="n">e</span> <span class="n">nxtAdr</span><span class="p">)</span> <span class="n">b</span> <span class="ow">=</span> <span class="kr">case</span> <span class="n">b</span> <span class="kr">of</span>
     <span class="kt">T</span> <span class="ow">-&gt;</span> <span class="p">([</span><span class="kt">TRUE</span><span class="p">],</span> <span class="n">m</span><span class="p">)</span>
     <span class="kt">F</span> <span class="ow">-&gt;</span> <span class="p">([</span><span class="kt">FALSE</span><span class="p">],</span> <span class="n">m</span><span class="p">)</span>
-    <span class="n">ae</span> <span class="p">`</span><span class="kt">Eq</span><span class="p">`</span> <span class="n">ae&#39;</span> <span class="ow">-&gt;</span>
-        <span class="kr">let</span> <span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">m&#39;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">aexpToAM1Code</span> <span class="n">m</span> <span class="n">ae</span>
-            <span class="p">(</span><span class="n">code&#39;</span><span class="p">,</span> <span class="n">m&#39;&#39;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">aexpToAM1Code</span> <span class="n">m&#39;</span> <span class="n">ae&#39;</span>
-        <span class="kr">in</span> <span class="p">(</span><span class="n">concat</span> <span class="p">[</span><span class="n">code&#39;</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="p">[</span><span class="kt">EQUAL</span><span class="p">]],</span> <span class="n">m&#39;&#39;</span><span class="p">)</span>
-    <span class="n">ae</span> <span class="p">`</span><span class="kt">Le</span><span class="p">`</span> <span class="n">ae&#39;</span> <span class="ow">-&gt;</span>
         <span class="o">...</span>
 </pre></div>
 
@@ -13666,11 +13739,6 @@ div#notebook {
         <span class="n">helper</span> <span class="ow">::</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="kt">St</span><span class="o">.</span><span class="kt">State</span> <span class="kt">EnvStateAM1</span> <span class="kt">AM1Code</span>
         <span class="n">helper</span> <span class="p">(</span><span class="n">var</span> <span class="p">`</span><span class="kt">Assign</span><span class="p">`</span> <span class="n">aexp</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">do</span>
             <span class="o">...</span>
-        <span class="n">helper</span> <span class="kt">Skip</span> <span class="ow">=</span> <span class="n">return</span> <span class="p">[</span><span class="kt">NOOP</span><span class="p">]</span>
-        <span class="n">helper</span> <span class="p">(</span><span class="n">c1</span> <span class="p">`</span><span class="kt">Comp</span><span class="p">`</span> <span class="n">c2</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">do</span>
-            <span class="o">...</span>
-        <span class="n">helper</span> <span class="p">(</span><span class="kt">IfThenElse</span> <span class="n">b</span> <span class="n">c1</span> <span class="n">c2</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">do</span>
-            <span class="o">...</span>
         <span class="n">helper</span> <span class="p">(</span><span class="kt">WhileDo</span> <span class="n">b</span> <span class="n">c</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">do</span>
             <span class="n">memSt</span> <span class="ow">&lt;-</span> <span class="kt">St</span><span class="o">.</span><span class="n">get</span>
             <span class="kr">let</span> <span class="p">(</span><span class="n">predCode</span><span class="p">,</span> <span class="n">memSt&#39;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">bexpToAM1Code</span> <span class="n">memSt</span> <span class="n">b</span>
@@ -13684,6 +13752,18 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Uma configuração de AM1 é de tipo $\text{Code} \times \text{Stack} \times \text{Memory}$; abaixo definem-se os últimos dois tipos.</p>
+<ul>
+<li>O tipo $\text{Stack}$ é uma lista de <code>Either Z Bool</code> - note-se que uma operação que espere ter um <code>x : Left Z</code> no topo da pilha e encontra <code>y : Right Bool</code> lançará erro, e vice-versa.</li>
+<li>Tanto aqui como na AM2, usa-se um <code>Map</code> para definir <code>Memory</code>, que é um mapeamento dos endereços calculados durante a compilação para os valores das variáveis correspondentes.</li>
+</ul>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
@@ -13691,14 +13771,6 @@ div#notebook {
     <div class="input_area">
 <div class=" highlight hl-Haskell"><pre><span></span><span class="kr">type</span> <span class="kt">Stack</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">Either</span> <span class="kt">Z</span> <span class="kt">Bool</span><span class="p">]</span>
 
-<span class="c1">-- Mapping from address positions to the values they contain.</span>
-<span class="c1">-- Should look like:</span>
-<span class="c1">-- 0 -&gt; n_1</span>
-<span class="c1">-- 1 -&gt; n_2</span>
-<span class="c1">-- 2 -&gt; n_3,</span>
-<span class="c1">-- ...</span>
-<span class="c1">-- k -&gt; n_k</span>
-<span class="c1">-- and so on, where n_i are integers.</span>
 <span class="kr">type</span> <span class="kt">Memory</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">Z</span> <span class="kt">Z</span>
 
 <span class="kr">type</span> <span class="kt">AM1Config</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">AM1Code</span><span class="p">,</span> <span class="kt">Stack</span><span class="p">,</span> <span class="kt">Memory</span><span class="p">)</span>
@@ -13708,6 +13780,15 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>stepAM1</code> recebe uma configuração, e dá um passo de execução da máquina AM1.<br>
+A função tem que ser definida para todos os casos de <code>AM1Instr</code>, pelo que por brevidade apenas se deixaram alguns exemplos.</p>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -13737,40 +13818,31 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Para poder executar um programa $\text{While}$ na máquina AM1, é preciso um estado inicial a partir do qual se carregarão os valores iniciais das variáveis em memória.</p>
+<p>A função <code>initConfigAM1</code> faz o descrito acima, devolvendo também o <code>Env</code> calculado após compilar o programa em "<em>bytecode</em>" AM1 - isto é necessário porque:</p>
+<ul>
+<li>a compilação $\text{While} \rightarrow \text{AM1Code}$ produz um mapeamento $\text{Var} \rightarrow \text{Addr}$</li>
+<li>após execução da máquina abstrata em <code>runStmInAM1</code> tem-se um mapeamento entre $\text{Addr} \rightarrow \text{Z}$ (variáveis a valores finais)</li>
+</ul>
+<p>donde, para poder devolver os valores finais de cada variável, são necessários ambos <code>Env</code> e <code>Memory</code>.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-Haskell"><pre><span></span><span class="nf">initConfigAM1</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">AM1Config</span><span class="p">,</span> <span class="kt">Env</span><span class="p">)</span>
-<span class="nf">initConfigAM1</span> <span class="n">initSt</span> <span class="n">stm</span> <span class="ow">=</span>
-    <span class="kr">let</span> <span class="n">code</span> <span class="ow">::</span> <span class="kt">AM1Code</span>
-        <span class="n">envSt</span> <span class="ow">::</span> <span class="kt">EnvStateAM1</span>
-        <span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">envSt</span><span class="p">)</span> <span class="ow">=</span> <span class="n">whileToAM1</span> <span class="n">stm</span>
 
-        <span class="n">environ</span> <span class="ow">=</span> <span class="n">getEnvSt</span> <span class="n">envSt</span>
-
-        <span class="n">memory</span> <span class="ow">::</span> <span class="kt">Memory</span>
-        <span class="n">memory</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="n">fromList</span> <span class="p">[(</span><span class="n">getEnv</span> <span class="n">environ</span> <span class="n">variable</span><span class="p">,</span> <span class="n">getSt</span> <span class="n">initSt</span> <span class="n">variable</span><span class="p">)</span> <span class="o">|</span> <span class="n">variable</span> <span class="ow">&lt;-</span> <span class="kt">M</span><span class="o">.</span><span class="n">keys</span> <span class="n">environ</span><span class="p">]</span>
-    <span class="kr">in</span> <span class="p">((</span><span class="n">code</span><span class="p">,</span> <span class="kt">[]</span><span class="p">,</span> <span class="n">memory</span><span class="p">),</span> <span class="n">environ</span><span class="p">)</span>
-
-<span class="c1">-- Dado um estado inicial e um comando da linguagem while, simula a sua execução</span>
-<span class="c1">-- na máquina abstrata AM1.</span>
 <span class="c1">-- Devolve as variáveis usadas no programa, e os valores que estavam nas respetivas</span>
 <span class="c1">-- posições de memória aquando da terminação da execução.</span>
 <span class="c1">-- Pode não terminar! (Halting problem).</span>
 <span class="nf">runStmInAM1</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">Var</span> <span class="kt">Z</span>
-<span class="nf">runStmInAM1</span> <span class="n">initSt</span> <span class="n">stm</span> <span class="ow">=</span>
-    <span class="kr">let</span> <span class="p">(</span><span class="n">init</span><span class="o">@</span><span class="p">(</span><span class="n">initCode</span><span class="p">,</span> <span class="n">initStack</span><span class="p">,</span> <span class="n">initMemory</span><span class="p">),</span> <span class="n">environ</span><span class="p">)</span> <span class="ow">=</span> <span class="n">initConfigAM1</span> <span class="n">initSt</span> <span class="n">stm</span>
-        <span class="n">run</span> <span class="ow">::</span> <span class="kt">AM1Config</span> <span class="ow">-&gt;</span> <span class="kt">AM1Config</span>
-        <span class="n">run</span> <span class="o">!</span><span class="n">cfg</span> <span class="ow">=</span>
-            <span class="kr">let</span> <span class="n">cfg&#39;</span> <span class="ow">=</span> <span class="n">stepAM1</span> <span class="n">cfg</span>
-            <span class="kr">in</span> <span class="kr">if</span> <span class="n">cfg&#39;</span> <span class="o">==</span> <span class="n">cfg</span> <span class="kr">then</span> <span class="n">cfg</span> <span class="kr">else</span> <span class="n">run</span> <span class="n">cfg&#39;</span>
-        <span class="p">(</span><span class="n">finalCode</span><span class="p">,</span> <span class="n">finalStack</span><span class="p">,</span> <span class="n">finalMemory</span><span class="p">)</span> <span class="ow">=</span> <span class="n">run</span> <span class="n">init</span>
-
-        <span class="n">varsToValues</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="n">fromList</span> <span class="p">[(</span><span class="n">var</span><span class="p">,</span> <span class="n">finalMemory</span> <span class="kt">M</span><span class="o">.!</span> <span class="p">(</span><span class="n">environ</span> <span class="kt">M</span><span class="o">.!</span> <span class="n">var</span><span class="p">))</span> <span class="o">|</span> <span class="n">var</span> <span class="ow">&lt;-</span> <span class="kt">M</span><span class="o">.</span><span class="n">keys</span> <span class="n">environ</span><span class="p">]</span>
-
-    <span class="kr">in</span> <span class="n">varsToValues</span>
 </pre></div>
 
     </div>
@@ -13856,7 +13928,15 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Abstract-Machine-2">Abstract Machine 2<a class="anchor-link" href="#Abstract-Machine-2">&#182;</a></h2>
+<h2 id="M&#225;quina-Abstrata-2-(AM2)">M&#225;quina Abstrata 2 (AM2)<a class="anchor-link" href="#M&#225;quina-Abstrata-2-(AM2)">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>O tipo <code>Env</code> seguinte é semelhante àquele definido em AM1, acrescentado de uma noção de <em>program counter</em>.</p>
+
 </div>
 </div>
 </div>
@@ -13865,9 +13945,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-Haskell"><pre><span></span><span class="c1">-- Mapping from variable names to positions in memory.</span>
-<span class="c1">-- Used during &quot;compilation&quot; of While code to AM1 bytecode.</span>
-<span class="kr">type</span> <span class="kt">Env</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">Var</span> <span class="kt">Z</span>
+<div class=" highlight hl-Haskell"><pre><span></span><span class="kr">type</span> <span class="kt">Env</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">Var</span> <span class="kt">Z</span>
 
 <span class="kr">type</span> <span class="kt">NextAddr</span> <span class="ow">=</span> <span class="kt">Z</span>
 
@@ -13878,14 +13956,6 @@ div#notebook {
 
 <span class="kr">type</span> <span class="kt">Stack</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">Either</span> <span class="kt">Z</span> <span class="kt">Bool</span><span class="p">]</span>
 
-<span class="c1">-- Mapping from address positions to the values they contain.</span>
-<span class="c1">-- Should look like:</span>
-<span class="c1">-- 0 -&gt; n_1</span>
-<span class="c1">-- 1 -&gt; n_2</span>
-<span class="c1">-- 2 -&gt; n_3,</span>
-<span class="c1">-- ...</span>
-<span class="c1">-- k -&gt; n_k</span>
-<span class="c1">-- and so on, where n_i are integers.</span>
 <span class="kr">type</span> <span class="kt">Memory</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">Z</span> <span class="kt">Z</span>
 </pre></div>
 
@@ -13893,6 +13963,14 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Como referido na Ficha 3, as instruções <code>LABEL-l, JUMP-l, JUMPFALSE-l</code> de AM2 substituem <code>BRANCH</code> e <code>LOOP</code>.</p>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -13914,6 +13992,27 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Uma configuração de AM2 é similar a uma de AM1, acrescida do valor de $\text{pc} : \text{N}$.<br>
+Para representar um programa de AM2 juntamente com <em>program counters</em>, escolheu-se usar um <code>Map</code> entre o valor de <code>pc</code> para uma dada instrução, e a instrução em si.</p>
+<p>À semelhança do que se fez para AM1,</p>
+<ul>
+<li>À medida que se compila o código de AM2, vão-se atribuindo posições em memória na primeira ocorrência de cada variável<ul>
+<li>o ADT <code>EnvStateAM2</code> regista esta informação. Incialmente, o mapeamento tem que ser <code>Map.empty</code>, e o próximo endereço <code>0</code>.</li>
+</ul>
+</li>
+<li>À medida que se compila o código de AM2, vão-se atribuindo números inteiros positivos únicos e estritamente crescentes às instruções, começando em <code>1</code>.<ul>
+<li>O campo <code>getNxtPC :: ProgramCounter</code> contém o valor de PC a ser usado na próxima instrução, se existir.</li>
+<li>O campo <code>getInstrs :: AM2AnnotatedProgram</code> contém o programa à medida que se traduz código <code>While</code> para <strong>bytecode</strong> <code>AM2</code>.</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -13963,6 +14062,16 @@ div#notebook {
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>aexpToAM2Code</code> e <code>bexpToAM2Code</code> correspondem a $\mathcal{C}\mathcal{A}$ e $\mathcal{C}\mathcal{B}$ para a máquina AM2, e como referido na seção sobre AM1, fazem uso da mónade <code>State</code> para poderem atualizar o <code>Env</code> com novas associações variável $\rightarrow$ endereço.</p>
+<p>Veja-se que por se usar a mónade <code>State</code>, pode-se utilizar funções como <a href="https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-State-Strict.html#v:modify-39-"><code>modify'</code></a> para ir atualizando a estrutura <code>EnvStateAM2</code> com a instrução em que se está, e o seu valor de <code>pc</code>.</p>
+<p>Manteve-se um excerto do código para ilustrar.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
@@ -13974,8 +14083,8 @@ div#notebook {
 <span class="nf">bexpToAM2Code</span> <span class="n">b</span> <span class="ow">=</span> <span class="kr">case</span> <span class="n">b</span> <span class="kr">of</span>
     <span class="o">...</span>
     <span class="n">be</span> <span class="p">`</span><span class="kt">Or</span><span class="p">`</span> <span class="n">be&#39;</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
-            <span class="c1">-- Careful with the order with which this is done - whichever is done first</span>
-            <span class="c1">-- puts its code on the stack first, so the second operand has to go first.</span>
+        <span class="c1">-- Careful with the order with which this is done - whichever is done first</span>
+        <span class="c1">-- puts its code on the stack first, so the second operand has to go first.</span>
         <span class="n">code&#39;</span> <span class="ow">&lt;-</span> <span class="n">bexpToAM2Code</span> <span class="n">be&#39;</span>
         <span class="n">code</span> <span class="ow">&lt;-</span> <span class="n">bexpToAM2Code</span> <span class="n">be</span>
         <span class="kt">St</span><span class="o">.</span><span class="n">modify&#39;</span> <span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="kt">EnvSt2</span> <span class="n">environ</span> <span class="n">nxtAdr</span> <span class="n">instrs</span> <span class="n">nxtPC</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">EnvSt2</span> <span class="n">environ</span> <span class="n">nxtAdr</span> <span class="p">(</span><span class="kt">M</span><span class="o">.</span><span class="n">insert</span> <span class="n">nxtPC</span> <span class="kt">OR</span> <span class="n">instrs</span><span class="p">)</span> <span class="p">(</span><span class="n">nxtPC</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
@@ -14001,6 +14110,21 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A função <code>whileToAM2 :: Stm -&gt; (AM2Code, EnvStateAM2)</code> gera o "<em>bytecode</em>" AM2 para um programa <code>While</code>, devolvendo também um valor de tipo <code>EnvStateAM2</code> que conterá o programa AM2 final anotado com <code>pc</code>s.</p>
+<p>O código máquina gerado para os comandos <code>IfThenElse</code> e <code>WhileDo</code> é complexo porque:</p>
+<ul>
+<li>deve primeiro gerar o código dos subcomandos e predicados,</li>
+<li>e só depois colocar as instruções de salto e labels, cujo program counter terá de ser guardado antes da tradução dos subcomandos.</li>
+</ul>
+<p>Veja-se a função <code>incrCounter</code> usada para obter o contador atual de <code>EnvStateAM2</code>, e incrementá-lo na estrutura sem mais nenhuma alteração.<br>
+Depois de gerado o código de e.g. predicado e "<em>branches</em>" de <code>IfThenElse</code> ou do corpo do ciclo de <code>WhileDo</code>, pode-se gerar as instruções de controlo <code>LABEL/JUMPFALSE/JUMP/LABEL</code> com os contadores obtidos.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
@@ -14016,17 +14140,7 @@ div#notebook {
 
         <span class="n">helper</span> <span class="ow">::</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="kt">St</span><span class="o">.</span><span class="kt">State</span> <span class="kt">EnvStateAM2</span> <span class="kt">AM2Code</span>
         <span class="n">helper</span> <span class="p">(</span><span class="n">var</span> <span class="p">`</span><span class="kt">Assign</span><span class="p">`</span> <span class="n">aexp</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">do</span>
-            <span class="n">code</span> <span class="ow">&lt;-</span> <span class="n">aexpToAM2Code</span> <span class="n">aexp</span>
-            <span class="kt">EnvSt2</span> <span class="n">environ</span> <span class="n">nxtAdr</span> <span class="n">instrs</span> <span class="n">nxtPC</span> <span class="ow">&lt;-</span> <span class="kt">St</span><span class="o">.</span><span class="n">get</span>
-            <span class="kr">case</span> <span class="kt">M</span><span class="o">.</span><span class="n">lookup</span> <span class="n">var</span> <span class="n">environ</span> <span class="kr">of</span>
-                <span class="kt">Nothing</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
-                    <span class="kr">let</span> <span class="n">instr</span> <span class="ow">=</span> <span class="kt">PUT</span> <span class="n">nxtAdr</span>
-                    <span class="kt">St</span><span class="o">.</span><span class="n">put</span> <span class="o">$</span> <span class="kt">EnvSt2</span> <span class="p">(</span><span class="kt">M</span><span class="o">.</span><span class="n">insert</span> <span class="n">var</span> <span class="n">nxtAdr</span> <span class="n">environ</span><span class="p">)</span> <span class="p">(</span><span class="n">nxtAdr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="kt">M</span><span class="o">.</span><span class="n">insert</span> <span class="n">nxtPC</span> <span class="n">instr</span> <span class="n">instrs</span><span class="p">)</span> <span class="p">(</span><span class="n">nxtPC</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">return</span> <span class="o">$</span> <span class="n">code</span> <span class="o">++</span> <span class="p">[</span><span class="n">instr</span><span class="p">]</span>
-                <span class="kt">Just</span> <span class="n">n</span>  <span class="ow">-&gt;</span> <span class="kr">do</span>
-                    <span class="kr">let</span> <span class="n">instr</span> <span class="ow">=</span> <span class="kt">PUT</span> <span class="n">n</span>
-                    <span class="kt">St</span><span class="o">.</span><span class="n">put</span> <span class="o">$</span> <span class="kt">EnvSt2</span> <span class="n">environ</span> <span class="n">nxtAdr</span> <span class="p">(</span><span class="kt">M</span><span class="o">.</span><span class="n">insert</span> <span class="n">nxtPC</span> <span class="n">instr</span> <span class="n">instrs</span><span class="p">)</span> <span class="p">(</span><span class="n">nxtPC</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">return</span> <span class="o">$</span> <span class="n">code</span> <span class="o">++</span> <span class="p">[</span><span class="n">instr</span><span class="p">]</span>
+            <span class="o">...</span>
         <span class="n">helper</span> <span class="kt">Skip</span> <span class="ow">=</span> <span class="kr">do</span>
             <span class="o">...</span>
         <span class="n">helper</span> <span class="p">(</span><span class="n">c1</span> <span class="p">`</span><span class="kt">Comp</span><span class="p">`</span> <span class="n">c2</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">do</span>
@@ -14034,29 +14148,8 @@ div#notebook {
             <span class="n">code2</span> <span class="ow">&lt;-</span> <span class="n">helper</span> <span class="n">c2</span>
             <span class="n">return</span> <span class="o">$</span> <span class="n">code1</span> <span class="o">++</span> <span class="n">code2</span>
 
-        <span class="c1">-- O código máquina gerado para o comando IfThenElse e para o comando WhileDo</span>
-        <span class="c1">-- é complexo porque deve primeiro gerar o código dos subcomandos e predicados,</span>
-        <span class="c1">-- e só depois colocar as instruções de salto e labels - cujo program counter</span>
-        <span class="c1">-- terá de ser guardado antes da tradução dos subcomandos.</span>
-        <span class="c1">--</span>
-        <span class="c1">-- Ver incrCounter.</span>
         <span class="n">helper</span> <span class="p">(</span><span class="kt">IfThenElse</span> <span class="n">b</span> <span class="n">c1</span> <span class="n">c2</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">do</span>
-            <span class="n">predCode</span> <span class="ow">&lt;-</span> <span class="n">bexpToAM2Code</span> <span class="n">b</span>
-            <span class="n">jzProgCounter</span> <span class="ow">&lt;-</span> <span class="n">incrCounter</span>
-            <span class="n">thenCode</span> <span class="ow">&lt;-</span> <span class="n">helper</span> <span class="n">c1</span>
-            <span class="n">elseProgCounter</span> <span class="ow">&lt;-</span> <span class="n">incrCounter</span>
-            <span class="n">elseCode</span> <span class="ow">&lt;-</span> <span class="n">helper</span> <span class="n">c2</span>
-            <span class="n">afterIfProgCounter</span> <span class="ow">&lt;-</span> <span class="n">incrCounter</span>
-            <span class="kr">let</span> <span class="n">ifJump</span>     <span class="ow">=</span> <span class="kt">JUMPFALSE</span> <span class="n">elseProgCounter</span>
-                <span class="n">elseLabel</span>  <span class="ow">=</span> <span class="kt">LABEL</span> <span class="n">elseProgCounter</span>
-                <span class="n">jumpToRest</span> <span class="ow">=</span> <span class="kt">JUMP</span> <span class="n">afterIfProgCounter</span>
-                <span class="n">restLabel</span>  <span class="ow">=</span> <span class="kt">LABEL</span> <span class="n">afterIfProgCounter</span>
-            <span class="kt">EnvSt2</span> <span class="n">environ</span> <span class="n">nxtAdr</span> <span class="n">instrs</span> <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="kt">St</span><span class="o">.</span><span class="n">get</span>
-            <span class="kr">let</span> <span class="n">jumps</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="n">fromList</span> <span class="p">[(</span><span class="n">jzProgCounter</span><span class="p">,</span> <span class="n">ifJump</span><span class="p">),</span> <span class="p">(</span><span class="n">elseProgCounter</span><span class="p">,</span> <span class="n">jumpToRest</span><span class="p">),</span> <span class="p">(</span><span class="n">afterIfProgCounter</span><span class="p">,</span> <span class="n">restLabel</span><span class="p">)]</span>
-            <span class="c1">-- Incrementa-se o contador de código devido ao LABEL final, que apontará</span>
-            <span class="c1">-- para o código depois do IfThenElse, se existir.</span>
-            <span class="kt">St</span><span class="o">.</span><span class="n">put</span> <span class="o">$</span> <span class="kt">EnvSt2</span> <span class="n">environ</span> <span class="n">nxtAdr</span> <span class="p">(</span><span class="n">instrs</span> <span class="p">`</span><span class="kt">M</span><span class="o">.</span><span class="n">union</span><span class="p">`</span> <span class="n">jumps</span><span class="p">)</span> <span class="p">(</span><span class="n">afterIfProgCounter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">return</span> <span class="o">$</span> <span class="n">predCode</span> <span class="o">++</span> <span class="p">[</span><span class="n">ifJump</span><span class="p">]</span> <span class="o">++</span> <span class="n">thenCode</span> <span class="o">++</span> <span class="p">[</span><span class="n">jumpToRest</span><span class="p">]</span> <span class="o">++</span> <span class="n">elseCode</span> <span class="o">++</span> <span class="p">[</span><span class="n">restLabel</span><span class="p">]</span>
+            <span class="o">...</span>
 
         <span class="n">helper</span> <span class="p">(</span><span class="kt">WhileDo</span> <span class="n">b</span> <span class="n">c</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">do</span>
             <span class="n">boolTestCounter</span> <span class="ow">&lt;-</span> <span class="n">incrCounter</span>
@@ -14081,22 +14174,26 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Como para AM1 com <code>stepAM1</code>, a função <code>stepAM2</code> faz uma transição -se possível - a partir de uma configuração AM2.<br>
+Deixam-se apenas alguns casos para ilustrar o seu funcionamento, e nota-se o seguinte:</p>
+<ul>
+<li>Nas instruções de AM2 que requerem saltos referentes a valores de <code>pc</code>, o campo <code>getInstrs :: AM2AnnotatedProgram</code> em <code>EnvStateAM2</code> permite obter segmentos do "<em>bytecode</em>" AM2 ao filtrar o <code>Map ProgramCounter AM2Instr</code> pelas chaves que correspondam ao programa a partir de uma certa <code>label :: ProgramCounter</code> (ver <code>initConfigAM2</code>)</li>
+</ul>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-Haskell"><pre><span></span><span class="c1">-- Given an AM2 configuration, execute a single instruction</span>
-<span class="c1">-- and transition into the next configuration.</span>
-<span class="nf">stepAM2</span> <span class="ow">::</span> <span class="kt">AM2Config</span> <span class="ow">-&gt;</span> <span class="kt">AM2AnnotatedProgram</span> <span class="ow">-&gt;</span> <span class="kt">AM2Config</span>
+<div class=" highlight hl-Haskell"><pre><span></span><span class="nf">stepAM2</span> <span class="ow">::</span> <span class="kt">AM2Config</span> <span class="ow">-&gt;</span> <span class="kt">AM2AnnotatedProgram</span> <span class="ow">-&gt;</span> <span class="kt">AM2Config</span>
 <span class="nf">stepAM2</span> <span class="n">conf</span><span class="o">@</span><span class="p">(</span><span class="kr">_</span><span class="p">,</span> <span class="kt">[]</span><span class="p">,</span> <span class="n">stack</span><span class="p">,</span> <span class="n">mem</span><span class="p">)</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">conf</span>
 <span class="nf">stepAM2</span> <span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">c</span> <span class="kt">:</span> <span class="n">cs</span><span class="p">,</span> <span class="n">stack</span><span class="p">,</span> <span class="n">mem</span><span class="p">)</span> <span class="n">ann</span> <span class="ow">=</span> <span class="kr">case</span> <span class="n">c</span> <span class="kr">of</span>
-    <span class="kt">PUSH</span> <span class="n">n</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">pc&#39;</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="kt">Left</span> <span class="n">n</span> <span class="kt">:</span> <span class="n">stack</span><span class="p">,</span> <span class="n">mem</span><span class="p">)</span>
-    <span class="kt">ADD</span> <span class="ow">-&gt;</span> <span class="kr">case</span> <span class="n">stack</span> <span class="kr">of</span>
-        <span class="kt">Left</span> <span class="n">z1</span> <span class="kt">:</span> <span class="kt">Left</span> <span class="n">z2</span> <span class="kt">:</span> <span class="n">stack&#39;</span> <span class="ow">-&gt;</span>
-            <span class="p">(</span><span class="n">pc&#39;</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="kt">Left</span> <span class="p">(</span><span class="n">z1</span> <span class="o">+</span> <span class="n">z2</span><span class="p">)</span> <span class="kt">:</span> <span class="n">stack</span><span class="p">,</span> <span class="n">mem</span><span class="p">)</span>
-        <span class="kr">_</span> <span class="ow">-&gt;</span> <span class="ne">error</span> <span class="s">&quot;ADD: invalid stack for operation!&quot;</span>
-    <span class="o">...</span>
     <span class="kt">LABEL</span> <span class="n">lab</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">pc&#39;</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">stack</span><span class="p">,</span> <span class="n">mem</span><span class="p">)</span>
     <span class="kt">JUMP</span> <span class="n">lab</span> <span class="ow">-&gt;</span> <span class="kr">case</span> <span class="kt">M</span><span class="o">.</span><span class="n">lookup</span> <span class="n">lab</span> <span class="n">ann</span> <span class="kr">of</span>
         <span class="kt">Nothing</span>    <span class="ow">-&gt;</span> <span class="ne">error</span> <span class="s">&quot;JUMP: invalid label!&quot;</span>
@@ -14122,16 +14219,29 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A função <code>initConfigAM2</code> produz, para um programa <code>While</code> e um estado inicial:</p>
+<ul>
+<li>a configuração inicial do programa para máquina AM2, acompanhada do</li>
+<li><code>Env</code> resultante da compilação, pelos mesmos motivos que AM1, e</li>
+<li>o mesmo programa AM2, mas anotado com <code>pc</code>s.</li>
+</ul>
+<p>A configuração inicial de um programa para AM2 precisa vir acompanhada de um Map com a associação entre cada instrução e o seu program counter,
+porque no caso das instruções de salto em que é possível "regredir" no programa, usar só uma lista para instruções não o permitirá.</p>
+<hr>
+<p>A função <code>runStmInAM2</code> é a equivalente de <code>runStmInAM1</code> em AM2.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-Haskell"><pre><span></span><span class="c1">-- A configuração inicial de um programa para AM2 precisa vir acompanhada de</span>
-<span class="c1">-- um Map com a associação entre cada instrução e o seu program counter,</span>
-<span class="c1">-- porque no caso das instruções de salto em que é possível &quot;regredir&quot; no</span>
-<span class="c1">-- programa, usar só uma lista para instruções não o permitirá.</span>
-<span class="nf">initConfigAM2</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">AM2Config</span><span class="p">,</span> <span class="kt">Env</span><span class="p">,</span> <span class="kt">AM2AnnotatedProgram</span><span class="p">)</span>
+<div class=" highlight hl-Haskell"><pre><span></span><span class="nf">initConfigAM2</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">AM2Config</span><span class="p">,</span> <span class="kt">Env</span><span class="p">,</span> <span class="kt">AM2AnnotatedProgram</span><span class="p">)</span>
 <span class="nf">initConfigAM2</span> <span class="n">initSt</span> <span class="n">stm</span> <span class="ow">=</span>
     <span class="kr">let</span> <span class="n">code</span> <span class="ow">::</span> <span class="kt">AM2Code</span>
         <span class="n">envSt</span> <span class="ow">::</span> <span class="kt">EnvStateAM2</span>
