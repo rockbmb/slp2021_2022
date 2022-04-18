@@ -30,7 +30,7 @@ executable semantics
                       StructOpSemantics,
 
                       AbstractMachine1,
-                      AbstractMachine2
+                      AbstractMachine3
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:

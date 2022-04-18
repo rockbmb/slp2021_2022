@@ -167,45 +167,45 @@ stepAM1 (c : cs, stack, mem) = case c of
     PUSH n -> (cs, Left n : stack, mem)
     ADD -> case stack of
         Left z1 : Left z2 : stack' ->
-            (cs, Left (z1 + z2) : stack, mem)
+            (cs, Left (z1 + z2) : stack', mem)
         _ -> error "ADD: invalid stack for operation!"
     MULT -> case stack of
         Left z1 : Left z2 : stack' ->
-            (cs, Left (z1 * z2) : stack, mem)
+            (cs, Left (z1 * z2) : stack', mem)
         _ -> error "MULT: invalid stack for operation!"
     SUB -> case stack of
         Left z1 : Left z2 : stack' ->
-            (cs, Left (z1 - z2) : stack, mem)
+            (cs, Left (z1 - z2) : stack', mem)
         _ -> error "SUB: invalid stack for operation!"
     TRUE -> (cs, Right True : stack, mem)
     FALSE -> (cs, Right False : stack, mem)
     EQUAL -> case stack of
         Left z1 : Left z2 : stack' ->
-            (cs, Right (z1 == z2) : stack, mem)
+            (cs, Right (z1 == z2) : stack', mem)
         _ -> error "EQUAL: invalid stack for operation!"
     LE -> case stack of
         Left z1 : Left z2 : stack' ->
-            (cs, Right (z1 <= z2) : stack, mem)
+            (cs, Right (z1 <= z2) : stack', mem)
         _ -> error "LE: invalid stack for operation!"
     GE -> case stack of
         Left z1 : Left z2 : stack' ->
-            (cs, Right (z1 >= z2) : stack, mem)
+            (cs, Right (z1 >= z2) : stack', mem)
         _ -> error "GE: invalid stack for operation!"
     LTHAN -> case stack of
         Left z1 : Left z2 : stack' ->
-            (cs, Right (z1 < z2) : stack, mem)
+            (cs, Right (z1 < z2) : stack', mem)
         _ -> error "LTHAN: invalid stack for operation!"
     AND -> case stack of
         Right b1 : Right b2 : stack' ->
-            (cs, Right (b1 && b2) : stack, mem)
+            (cs, Right (b1 && b2) : stack', mem)
         _ -> error "AND: invalid stack for operation!"
     OR -> case stack of
         Right b1 : Right b2 : stack' ->
-            (cs, Right (b1 || b2) : stack, mem)
+            (cs, Right (b1 || b2) : stack', mem)
         _ -> error "OR: invalid stack for operation!"
     NEG -> case stack of
         Right b1 : stack' ->
-            (cs, Right (not b1) : stack, mem)
+            (cs, Right (not b1) : stack', mem)
         _ -> error "NEG: invalid stack for operation!"
     PUT n -> case stack of
         Left z : stack' -> (cs, stack', M.insert n z mem)
