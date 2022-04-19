@@ -13108,7 +13108,7 @@ div#notebook {
 <li><a href="#avaliação-de-programas-por-semântica-natural">Semântica Natural</a></li>
 <li><a href="#avaliação-de-programas-por-semântica-operacional-estrutural">Semântica Operacional Estrutural</a></li>
 <li><a href="#máquina-abstrata-1-am1">Detalhes de Implementação da AM1</a></li>
-<li><a href="#máquina-abstrata-2-AM3">Detalhes de Implementação da AM3</a></li>
+<li><a href="#máquinas-abstratas-2-e-3-am3">Detalhes de Implementação de AM2, AM3</a></li>
 </ol>
 
 </div>
@@ -13118,6 +13118,18 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Nota-sobre-o-Projeto">Nota sobre o Projeto<a class="anchor-link" href="#Nota-sobre-o-Projeto">&#182;</a></h3><p>Para correr o código, basta fazer</p>
+<div class="highlight"><pre><span></span><span class="nb">cd</span> semantics
+cabal repl
+</pre></div>
+<p>e executar os comandos aqui descritos.</p>
 
 </div>
 </div>
@@ -13701,7 +13713,7 @@ div#notebook {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><code>aexpToAM1Code</code> e <code>bexpToAM1Code</code> correspondem a $\mathcal{C}\mathcal{A}$ e $\mathcal{C}\mathcal{B}$, respetivamente.<br>
 Para poderem fazer sempre a associação correta entre variáveis, recebem como argumento um <code>EnvStateAM1</code> que é atualizado e passado às chamadas recursivas.</p>
-<p>Note-se que se poderia fazer uso da mónade <a href="https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-State-Strict.html#t:State"><code>State</code></a>, e de facto, é isto que acontece na implementação de AM3.</p>
+<p>Note-se que se poderia fazer uso da mónade <a href="https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-State-Strict.html#t:State"><code>State</code></a>, e de facto, é isto que acontece na implementação de AM2/AM3.</p>
 
 </div>
 </div>
@@ -13752,6 +13764,39 @@ Para poderem fazer sempre a associação correta entre variáveis, recebem como 
 </div>
 
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-Haskell"><pre><span></span><span class="nf">whileToAM1</span> <span class="n">fact</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>([PUSH 1,PUT 0,LOOP [PUSH 1,GET 1,GE] [GET 1,GET 0,MULT,PUT 0,PUSH 1,GET 1,SUB,PUT 1]],EnvSt {getEnvSt = fromList [(&#34;f&#34;,0),(&#34;n&#34;,1)], getNxtAdr = 2})</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -13780,6 +13825,52 @@ Para poderem fazer sempre a associação correta entre variáveis, recebem como 
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Sem&#226;ntica-Operacional-de-AM1">Sem&#226;ntica Operacional de AM1<a class="anchor-link" href="#Sem&#226;ntica-Operacional-de-AM1">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Define-se de seguida a semântica operacional das operações $\text{PUT-}n$ e $\text{GET-}n$.<br>
+Todas as outras permanecem iguais às definidas no material da bibliografia da UC.</p>
+<p>Notas:</p>
+<ul>
+<li>Para definir a semântica operacional das instruções $\text{PUT-}n$ e $\text{GET-}n$, o <code>Map Z Z</code> que associa endereços de variáveis a valores é formalizado como uma lista, ou seja, $\text{Memory} = \text{Z}^*$.</li>
+<li>Dado $m : \text{Memory}$, tem-se que $m[n]$ representa o valor no endereço $n$, a começar em 0, se este endereço existir.<ul>
+<li>Se o endereço especificado não existir, a semântica operacional não está definida, e a implementação lança um erro em Haskell.</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$
+\begin{aligned}
+&amp; \langle \text{PUT-}n : cs, z : e, m \rangle \quad &amp;&amp; \triangleright \quad
+\begin{cases}
+\langle cs, e, m' \rangle \qquad &amp; \text{se} \ 0 \leq n \lt |m| \text{, e}\ m' = m \ \text{, com } \ m = m' \ \text{exceto em} \ n: m' [n] = z. \\
+\bot \qquad &amp; \text{se } \lnot(\ 0 \leq n \lt |m|). \\
+\end{cases} \\
+
+&amp; \langle \text{GET-}n : cs, z : e, m \rangle \quad &amp;&amp; \triangleright \quad
+\begin{cases}
+\langle cs, z : e, m \rangle \qquad &amp; \text{se} \ 0 \leq n \leq |m| \text{, e}\ z = m[n].\\
+\bot \qquad &amp; \text{se} \ \lnot(0 \leq n \leq |m| \text{, e}\ z = m[n]).\\
+\end{cases} \\
+
+\end{aligned}
+$$
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
@@ -13928,7 +14019,25 @@ A função tem que ser definida para todos os casos de <code>AM1Instr</code>, pe
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="M&#225;quina-Abstrata-2-(AM3)">M&#225;quina Abstrata 2 (AM3)<a class="anchor-link" href="#M&#225;quina-Abstrata-2-(AM3)">&#182;</a></h2>
+<h2 id="M&#225;quinas-Abstratas-2-e-3-(AM3)">M&#225;quinas Abstratas 2 e 3 (AM3)<a class="anchor-link" href="#M&#225;quinas-Abstratas-2-e-3-(AM3)">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Em Nielson, H. e Nielson F (2007) [1] p. 74, além de AM1, definem-se mais duas versões de máquinas abstratas, AM2 e AM3.<br>
+AM2 é a apresentada na Ficha 3, e AM3 é igual à anterior, mas sem a operação <code>LABEL-l</code>, e cujos saltos usam enddereços absolutos.</p>
+<p>De seguida apresentam-se as duas máquinas.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+
 </div>
 </div>
 </div>
@@ -13954,6 +14063,8 @@ A função tem que ser definida para todos os casos de <code>AM1Instr</code>, pe
 <span class="c1">-- and strictly increases by 1 unit with every atomic instruction.</span>
 <span class="kr">type</span> <span class="kt">ProgramCounter</span> <span class="ow">=</span> <span class="kt">Z</span>
 
+<span class="kr">type</span> <span class="kt">Label</span> <span class="ow">=</span> <span class="kt">Z</span>
+
 <span class="kr">type</span> <span class="kt">Stack</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">Either</span> <span class="kt">Z</span> <span class="kt">Bool</span><span class="p">]</span>
 
 <span class="kr">type</span> <span class="kt">Memory</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">Z</span> <span class="kt">Z</span>
@@ -13967,7 +14078,7 @@ A função tem que ser definida para todos os casos de <code>AM1Instr</code>, pe
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Como referido na Ficha 3, as instruções <code>LABEL-l, JUMP-l, JUMPFALSE-l</code> de AM3 substituem <code>BRANCH</code> e <code>LOOP</code>.</p>
+<p>Como referido na Ficha 3, as instruções <code>LABEL-l, JUMP-l, JUMPFALSE-l</code> de AM2, AM3 substituem <code>BRANCH</code> e <code>LOOP</code>.</p>
 
 </div>
 </div>
@@ -13977,10 +14088,30 @@ A função tem que ser definida para todos os casos de <code>AM1Instr</code>, pe
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-Haskell"><pre><span></span><span class="kr">data</span> <span class="kt">AM2Instr</span>
+    <span class="ow">=</span> <span class="kt">PUSH</span> <span class="kt">Z</span>
+    <span class="o">|</span> <span class="o">...</span>
+    <span class="o">|</span> <span class="kt">LABEL</span> <span class="kt">Label</span>
+    <span class="o">|</span> <span class="kt">JUMP</span> <span class="kt">Label</span>
+    <span class="o">|</span> <span class="kt">JUMPFALSE</span> <span class="kt">Label</span>
+    <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Eq</span><span class="p">,</span> <span class="kt">Show</span><span class="p">)</span>
+
+<span class="kr">type</span> <span class="kt">AM2Code</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">AM2Instr</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-Haskell"><pre><span></span><span class="kr">data</span> <span class="kt">AM3Instr</span>
     <span class="ow">=</span> <span class="kt">PUSH</span> <span class="kt">Z</span>
     <span class="o">|</span> <span class="o">...</span>
-    <span class="o">|</span> <span class="kt">LABEL</span> <span class="kt">ProgramCounter</span>
     <span class="o">|</span> <span class="kt">JUMP</span> <span class="kt">ProgramCounter</span>
     <span class="o">|</span> <span class="kt">JUMPFALSE</span> <span class="kt">ProgramCounter</span>
     <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Eq</span><span class="p">,</span> <span class="kt">Show</span><span class="p">)</span>
@@ -13996,19 +14127,31 @@ A função tem que ser definida para todos os casos de <code>AM1Instr</code>, pe
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Uma configuração de AM3 é similar a uma de AM1, acrescida do valor de $\text{pc} : \text{N}$.<br>
-Para representar um programa de AM3 juntamente com <em>program counters</em>, escolheu-se usar um <code>Map</code> entre o valor de <code>pc</code> para uma dada instrução, e a instrução em si.</p>
+<h3 id="Configura&#231;&#245;es-e-convers&#227;o-While-$\rightarrow$-AM-bytecode">Configura&#231;&#245;es e convers&#227;o While $\rightarrow$ AM <em>bytecode</em><a class="anchor-link" href="#Configura&#231;&#245;es-e-convers&#227;o-While-$\rightarrow$-AM-bytecode">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Configurações de AM2 e AM3 são similares às de AM1, acrescidas do valor de $\text{pc} : \text{N}$.<br>
+Para representar um programa de AM2/AM3 juntamente com <em>program counters</em>, escolheu-se usar um <code>Map</code> entre o valor de <code>pc</code> para uma dada instrução, e a instrução em si.</p>
 <p>À semelhança do que se fez para AM1,</p>
 <ul>
-<li>À medida que se compila o código de AM3, vão-se atribuindo posições em memória na primeira ocorrência de cada variável<ul>
-<li>o ADT <code>EnvStateAM3</code> regista esta informação. Incialmente, o mapeamento tem que ser <code>Map.empty</code>, e o próximo endereço <code>0</code>.</li>
+<li>À medida que se compila o código de AM2/AM3, vão-se atribuindo posições em memória na primeira ocorrência de cada variável<ul>
+<li>os ADT <code>EnvStateAM2/EnvStateAM3</code> registam esta informação. Incialmente, o mapeamento tem que ser <code>Map.empty</code>, e o próximo endereço <code>0</code>.</li>
 </ul>
 </li>
-<li>À medida que se compila o código de AM3, vão-se atribuindo números inteiros positivos únicos e estritamente crescentes às instruções, começando em <code>1</code>.<ul>
+<li>À medida que se compila o código de AM2/AM3, vão-se atribuindo números inteiros positivos únicos e estritamente crescentes às instruções, começando em <code>1</code>.<ul>
 <li>O campo <code>getNxtPC :: ProgramCounter</code> contém o valor de PC a ser usado na próxima instrução, se existir.</li>
 <li>O campo <code>getInstrs :: AM3AnnotatedProgram</code> contém o programa à medida que se traduz código <code>While</code> para <strong>bytecode</strong> <code>AM3</code>.</li>
 </ul>
 </li>
+</ul>
+<p>Só na AM2:</p>
+<ul>
+<li>guarda-se um <code>Map</code> entre labels <code>l</code> (começam em 0) e o <code>pc</code> onde ocorre a instrução <code>LABEL-l</code>.</li>
+<li>o campo <code>getNxtLabel :: Label</code> regista, durante o process de compilação, o próximo valor livre para se criarem etiquetas novas.</li>
 </ul>
 
 </div>
@@ -14019,8 +14162,10 @@ Para representar um programa de AM3 juntamente com <em>program counters</em>, es
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-Haskell"><pre><span></span><span class="kr">type</span> <span class="kt">AM3Config</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">ProgramCounter</span><span class="p">,</span> <span class="kt">AM3Code</span><span class="p">,</span> <span class="kt">Stack</span><span class="p">,</span> <span class="kt">Memory</span><span class="p">)</span>
+<div class=" highlight hl-Haskell"><pre><span></span><span class="kr">type</span> <span class="kt">AM2Config</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">ProgramCounter</span><span class="p">,</span> <span class="kt">AM2Code</span><span class="p">,</span> <span class="kt">Stack</span><span class="p">,</span> <span class="kt">Memory</span><span class="p">)</span>
+<span class="kr">type</span> <span class="kt">AM3Config</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">ProgramCounter</span><span class="p">,</span> <span class="kt">AM3Code</span><span class="p">,</span> <span class="kt">Stack</span><span class="p">,</span> <span class="kt">Memory</span><span class="p">)</span>
 
+<span class="kr">type</span> <span class="kt">AM2AnnotatedProgram</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">ProgramCounter</span> <span class="kt">AM2Instr</span>
 <span class="kr">type</span> <span class="kt">AM3AnnotatedProgram</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">ProgramCounter</span> <span class="kt">AM3Instr</span>
 </pre></div>
 
@@ -14034,7 +14179,16 @@ Para representar um programa de AM3 juntamente com <em>program counters</em>, es
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-Haskell"><pre><span></span><span class="kr">data</span> <span class="kt">EnvStateAM3</span> <span class="ow">=</span> <span class="kt">EnvSt2</span> <span class="p">{</span>
+<div class=" highlight hl-Haskell"><pre><span></span><span class="kr">data</span> <span class="kt">EnvStateAM2</span> <span class="ow">=</span> <span class="kt">EnvSt2</span> <span class="p">{</span>
+    <span class="n">getEnvSt</span>     <span class="ow">::</span> <span class="o">!</span><span class="kt">Env</span><span class="p">,</span>
+    <span class="n">getNxtAdr</span>    <span class="ow">::</span> <span class="o">!</span><span class="kt">NextAddr</span><span class="p">,</span>
+    <span class="n">getInstrs</span>    <span class="ow">::</span> <span class="kt">AM2AnnotatedProgram</span><span class="p">,</span>
+    <span class="n">getNxtPC</span>     <span class="ow">::</span> <span class="kt">ProgramCounter</span><span class="p">,</span>
+    <span class="n">getLabelLocs</span> <span class="ow">::</span> <span class="kt">LabelLocations</span><span class="p">,</span>
+    <span class="n">getNxtLabel</span>  <span class="ow">::</span> <span class="kt">Label</span>
+    <span class="p">}</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Eq</span><span class="p">)</span>
+
+<span class="kr">data</span> <span class="kt">EnvStateAM3</span> <span class="ow">=</span> <span class="kt">EnvSt2</span> <span class="p">{</span>
     <span class="n">getEnvSt</span>  <span class="ow">::</span> <span class="o">!</span><span class="kt">Env</span><span class="p">,</span>
     <span class="n">getNxtAdr</span> <span class="ow">::</span> <span class="o">!</span><span class="kt">NextAddr</span><span class="p">,</span>
     <span class="n">getInstrs</span> <span class="ow">::</span> <span class="kt">AM3AnnotatedProgram</span><span class="p">,</span>
@@ -14058,14 +14212,14 @@ Para representar um programa de AM3 juntamente com <em>program counters</em>, es
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Tradu&#231;&#227;o-de-express&#245;es-aritm&#233;ticas-e-booleanas-para-&quot;bytecode&quot;-AM3">Tradu&#231;&#227;o de express&#245;es aritm&#233;ticas e booleanas para "<em>bytecode</em>" AM3<a class="anchor-link" href="#Tradu&#231;&#227;o-de-express&#245;es-aritm&#233;ticas-e-booleanas-para-&quot;bytecode&quot;-AM3">&#182;</a></h3>
+<h3 id="Tradu&#231;&#227;o-de-express&#245;es-aritm&#233;ticas-e-booleanas-para-&quot;bytecode&quot;-AM2/AM3">Tradu&#231;&#227;o de express&#245;es aritm&#233;ticas e booleanas para "<em>bytecode</em>" AM2/AM3<a class="anchor-link" href="#Tradu&#231;&#227;o-de-express&#245;es-aritm&#233;ticas-e-booleanas-para-&quot;bytecode&quot;-AM2/AM3">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><code>aexpToAM3Code</code> e <code>bexpToAM3Code</code> correspondem a $\mathcal{C}\mathcal{A}$ e $\mathcal{C}\mathcal{B}$ para a máquina AM3, e como referido na seção sobre AM1, fazem uso da mónade <code>State</code> para poderem atualizar o <code>Env</code> com novas associações variável $\rightarrow$ endereço.</p>
+<p><code>aexpToAM2Code/aexpToAM3Code</code> e <code>bexpToAM2Code/bexpToAM3Code</code> correspondem a $\mathcal{C}\mathcal{A}$ e $\mathcal{C}\mathcal{B}$ para a máquina AM3, e como referido na seção sobre AM1, fazem uso da mónade <code>State</code> para poderem atualizar o <code>Env</code> com novas associações variável $\rightarrow$ endereço.</p>
 <p>Veja-se que por se usar a mónade <code>State</code>, pode-se utilizar funções como <a href="https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-State-Strict.html#v:modify-39-"><code>modify'</code></a> para ir atualizando a estrutura <code>EnvStateAM3</code> com a instrução em que se está, e o seu valor de <code>pc</code>.</p>
 <p>Manteve-se um excerto do código para ilustrar.</p>
 
@@ -14113,14 +14267,15 @@ Para representar um programa de AM3 juntamente com <em>program counters</em>, es
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A função <code>whileToAM3 :: Stm -&gt; (AM3Code, EnvStateAM3)</code> gera o "<em>bytecode</em>" AM3 para um programa <code>While</code>, devolvendo também um valor de tipo <code>EnvStateAM3</code> que conterá o programa AM3 final anotado com <code>pc</code>s.</p>
+<p>As funções <code>whileToAM2 :: Stm -&gt; (AM2Code, EnvStateAM2)</code> e <code>whileToAM3 :: Stm -&gt; (AM3Code, EnvStateAM3)</code> geram o "<em>bytecode</em>" AM2/AM3 para um programa <code>While</code>, devolvendo também um valor de tipo <code>EnvStateAM2/EnvStateAM3</code> que conterão os programas AM2/AM3 finais anotado com <code>pc</code>s.</p>
 <p>O código máquina gerado para os comandos <code>IfThenElse</code> e <code>WhileDo</code> é complexo porque:</p>
 <ul>
 <li>deve primeiro gerar o código dos subcomandos e predicados,</li>
-<li>e só depois colocar as instruções de salto e labels, cujo program counter terá de ser guardado antes da tradução dos subcomandos.</li>
+<li>e só depois colocar as instruções de salto e labels, cujo "<em>program counter</em>" ("<em>label</em>" no caso de AM2) terá de ser guardado antes da tradução dos subcomandos.</li>
 </ul>
 <p>Veja-se a função <code>incrCounter</code> usada para obter o contador atual de <code>EnvStateAM3</code>, e incrementá-lo na estrutura sem mais nenhuma alteração.<br>
 Depois de gerado o código de e.g. predicado e "<em>branches</em>" de <code>IfThenElse</code> ou do corpo do ciclo de <code>WhileDo</code>, pode-se gerar as instruções de controlo <code>LABEL/JUMPFALSE/JUMP/LABEL</code> com os contadores obtidos.</p>
+<p>O caso AM2 com "<em>labels</em>" é similar.</p>
 
 </div>
 </div>
@@ -14152,21 +14307,20 @@ Depois de gerado o código de e.g. predicado e "<em>branches</em>" de <code>IfTh
             <span class="o">...</span>
 
         <span class="n">helper</span> <span class="p">(</span><span class="kt">WhileDo</span> <span class="n">b</span> <span class="n">c</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">do</span>
-            <span class="n">boolTestCounter</span> <span class="ow">&lt;-</span> <span class="n">incrCounter</span>
+            <span class="n">boolTestCounter</span> <span class="ow">&lt;-</span> <span class="n">getCounter</span>
             <span class="n">predCode</span> <span class="ow">&lt;-</span> <span class="n">bexpToAM3Code</span> <span class="n">b</span>
             <span class="n">jzProgCounter</span> <span class="ow">&lt;-</span> <span class="n">incrCounter</span>
             <span class="n">loopCode</span> <span class="ow">&lt;-</span> <span class="n">helper</span> <span class="n">c</span>
             <span class="n">jumpCounter</span> <span class="ow">&lt;-</span> <span class="n">incrCounter</span>
             <span class="n">afterWhileCounter</span> <span class="ow">&lt;-</span> <span class="n">incrCounter</span>
-            <span class="kr">let</span> <span class="n">whileLabel</span> <span class="ow">=</span> <span class="kt">LABEL</span> <span class="n">boolTestCounter</span>
-                <span class="n">whileJump</span>  <span class="ow">=</span> <span class="kt">JUMPFALSE</span> <span class="n">afterWhileCounter</span>
+            <span class="kr">let</span> <span class="n">whileJump</span>  <span class="ow">=</span> <span class="kt">JUMPFALSE</span> <span class="n">afterWhileCounter</span>
                 <span class="n">loopJump</span>   <span class="ow">=</span> <span class="kt">JUMP</span> <span class="n">boolTestCounter</span>
-                <span class="n">restLabel</span>  <span class="ow">=</span> <span class="kt">LABEL</span> <span class="n">afterWhileCounter</span>
+                <span class="n">afterWhile</span> <span class="ow">=</span> <span class="kt">NOOP</span>
             <span class="kt">EnvSt2</span> <span class="n">environ</span> <span class="n">nxtAdr</span> <span class="n">instrs</span> <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="kt">St</span><span class="o">.</span><span class="n">get</span>
-            <span class="kr">let</span> <span class="n">jumps</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="n">fromList</span> <span class="p">[(</span><span class="n">boolTestCounter</span><span class="p">,</span> <span class="n">whileLabel</span><span class="p">),</span> <span class="p">(</span><span class="n">jzProgCounter</span><span class="p">,</span> <span class="n">whileJump</span><span class="p">),</span> <span class="p">(</span><span class="n">jumpCounter</span><span class="p">,</span> <span class="n">loopJump</span><span class="p">),</span> <span class="p">(</span><span class="n">afterWhileCounter</span><span class="p">,</span> <span class="n">restLabel</span><span class="p">)]</span>
-            <span class="kt">St</span><span class="o">.</span><span class="n">put</span> <span class="o">$</span> <span class="kt">EnvSt2</span> <span class="n">environ</span> <span class="n">nxtAdr</span> <span class="p">(</span><span class="n">instrs</span> <span class="p">`</span><span class="kt">M</span><span class="o">.</span><span class="n">union</span><span class="p">`</span> <span class="n">jumps</span><span class="p">)</span> <span class="p">(</span><span class="n">afterWhileCounter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="kr">let</span> <span class="n">jumps</span> <span class="ow">=</span> <span class="kt">M</span><span class="o">.</span><span class="n">fromList</span> <span class="p">[(</span><span class="n">jzProgCounter</span><span class="p">,</span> <span class="n">whileJump</span><span class="p">),</span> <span class="p">(</span><span class="n">jumpCounter</span><span class="p">,</span> <span class="n">loopJump</span><span class="p">),</span> <span class="p">(</span><span class="n">afterWhileCounter</span><span class="p">,</span> <span class="n">afterWhile</span><span class="p">)]</span>
+            <span class="kt">St</span><span class="o">.</span><span class="n">put</span> <span class="o">$</span> <span class="kt">EnvSt2</span> <span class="n">environ</span> <span class="n">nxtAdr</span> <span class="p">(</span><span class="n">instrs</span> <span class="p">`</span><span class="kt">M</span><span class="o">.</span><span class="n">union</span><span class="p">`</span> <span class="n">jumps</span><span class="p">)</span> <span class="n">afterWhileCounter</span>
 
-            <span class="n">return</span> <span class="o">$</span> <span class="p">[</span><span class="n">whileLabel</span><span class="p">]</span> <span class="o">++</span> <span class="n">predCode</span> <span class="o">++</span> <span class="p">[</span><span class="n">whileJump</span><span class="p">]</span> <span class="o">++</span> <span class="n">loopCode</span> <span class="o">++</span> <span class="p">[</span><span class="n">loopJump</span><span class="p">]</span> <span class="o">++</span> <span class="p">[</span><span class="n">restLabel</span><span class="p">]</span>
+            <span class="n">return</span> <span class="o">$</span> <span class="n">predCode</span> <span class="o">++</span> <span class="p">[</span><span class="n">whileJump</span><span class="p">]</span> <span class="o">++</span> <span class="n">loopCode</span> <span class="o">++</span> <span class="p">[</span><span class="n">loopJump</span><span class="p">]</span>
 </pre></div>
 
     </div>
@@ -14177,10 +14331,82 @@ Depois de gerado o código de e.g. predicado e "<em>branches</em>" de <code>IfTh
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Como para AM1 com <code>stepAM1</code>, a função <code>stepAM3</code> faz uma transição -se possível - a partir de uma configuração AM3.<br>
+<h3 id="Sem&#226;ntica-Operacional-de-AM2-e-AM3">Sem&#226;ntica Operacional de AM2 e AM3<a class="anchor-link" href="#Sem&#226;ntica-Operacional-de-AM2-e-AM3">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Às outras operações de AM e AM1 já definidas, incrementa-se o "<em>program counter</em>" após cada transição, e acrescentam-se as seguintes transições:</p>
+<ul>
+<li>Para AM2</li>
+</ul>
+$$
+\begin{aligned}
+
+&amp; \langle pc, \text{LABEL-}l : cs, e, m \rangle \quad &amp;&amp; \triangleright \quad \langle pc + 1, cs, e, m \rangle \\
+
+
+&amp; \langle pc, \text{JUMPFALSE-}l : cs, t : e, m \rangle \quad &amp;&amp; \triangleright \quad
+\begin{cases}
+\langle pc + 1, cs, e, m \rangle \ &amp; \text{se} \ t = \text{tt} \\
+\langle pc', \text{code}[pc':], e, m \rangle \ &amp; \text{se} \ t = \text{ff, } \exists pc' . code[pc'] = \text{LABEL-}l \text{, e } 0 \leq pc' \lt |code| \\
+\bot \ &amp; \text{se} \ t = \text{ff, e } \lnot(\exists pc' . code[pc'] = \text{LABEL-}l \text{, e } 0 \leq pc' \lt |code|) \\
+\end{cases} \\
+
+&amp; \langle pc, \text{JUMP-}l : cs, z : e, m \rangle \quad &amp;&amp; \triangleright \quad 
+\begin{cases}
+\langle pc', \text{code}[pc':], e, m \rangle \ &amp; \text{se } \exists pc' . code[pc'] = \text{LABEL-}l \text{, e } 0 \leq pc' \lt |code| \\
+\bot \ &amp; \text{se} \ \lnot(\exists pc' . code[pc'] = \text{LABEL-}l \text{, e } 0 \leq pc' \lt |code|) \\
+\end{cases}
+\end{aligned}
+$$<p>A notação $code[pc:]$ representa, dado um programa completo $code : \text{Code}$ - que é um valor da categoria sintática das sequências de instruções - todas as instruções a partir do índice $pc$, assumindo que é válido.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>Para AM3</li>
+</ul>
+$$
+\begin{aligned}
+
+&amp; \langle pc, \text{JUMPFALSE-}l : cs, t : e, m \rangle \quad &amp;&amp; \triangleright \quad
+\begin{cases}
+\langle pc + 1, cs, e, m \rangle \ &amp; \text{se} \ t = \text{tt} \\
+\langle l, \text{code}[l:], e, m \rangle \ &amp; \text{se} \ t = \text{ff, e } 0 \leq l \lt |code| \\
+\bot \ &amp; \text{se} \ t = \text{ff, e } \lnot(0 \leq l \lt |code|) \\
+\end{cases} \\
+
+&amp; \langle pc, \text{JUMP-}l : cs, z : e, m \rangle \quad &amp;&amp; \triangleright \quad 
+\begin{cases}
+\langle l, \text{code}[l:], e, m \rangle \ &amp; \text{se} \ 0 \leq l \lt |code| \\
+\bot \ &amp; \text{se} \ \lnot(0 \leq l \lt |code|) \\
+\end{cases}
+\end{aligned}
+$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Como para AM1 com <code>stepAM1</code>, as funções <code>stepAM2/stepAM3</code> fazem uma transição - se possível - a partir de uma configuração AM2/AM3.<br>
 Deixam-se apenas alguns casos para ilustrar o seu funcionamento, e nota-se o seguinte:</p>
 <ul>
-<li>Nas instruções de AM3 que requerem saltos referentes a valores de <code>pc</code>, o campo <code>getInstrs :: AM3AnnotatedProgram</code> em <code>EnvStateAM3</code> permite obter segmentos do "<em>bytecode</em>" AM3 ao filtrar o <code>Map ProgramCounter AM3Instr</code> pelas chaves que correspondam ao programa a partir de uma certa <code>label :: ProgramCounter</code> (ver <code>initConfigAM3</code>)</li>
+<li>Nas instruções de AM2/AM3 que requerem saltos referentes a valores de <code>pc</code>, o campo <code>getInstrs :: AM3AnnotatedProgram</code> em <code>EnvStateAM2/EnvStateAM3</code> permite obter segmentos do "<em>bytecode</em>" am2/AM3 ao filtrar o <code>Map ProgramCounter (AM2Instr/AM3Instr)</code> pelas chaves que correspondam ao programa a partir de uma certa <code>label :: ProgramCounter</code> (ver <code>initConfigAM2/initConfigAM3</code>).</li>
 </ul>
 
 </div>
@@ -14222,16 +14448,15 @@ Deixam-se apenas alguns casos para ilustrar o seu funcionamento, e nota-se o seg
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A função <code>initConfigAM3</code> produz, para um programa <code>While</code> e um estado inicial:</p>
+<p>As funções <code>initConfigAM2/initConfigAM3</code> produzem, para um programa <code>While</code> e um estado inicial:</p>
 <ul>
-<li>a configuração inicial do programa para máquina AM3, acompanhada do</li>
+<li>a configuração inicial do programa para máquina AM2/AM3, acompanhada do</li>
 <li><code>Env</code> resultante da compilação, pelos mesmos motivos que AM1, e</li>
 <li>o mesmo programa AM3, mas anotado com <code>pc</code>s.</li>
 </ul>
-<p>A configuração inicial de um programa para AM3 precisa vir acompanhada de um Map com a associação entre cada instrução e o seu program counter,
-porque no caso das instruções de salto em que é possível "regredir" no programa, usar só uma lista para instruções não o permitirá.</p>
+<p>A configuração inicial de um programa para AM2/AM3 precisa vir acompanhada de um Map com a associação entre cada instrução e o seu program counter - e no caso AM2, com a associação entre cada label e o <code>pc</code> onde está a instrução <code>LABEL</code> - porque no caso das instruções de salto em que é possível "regredir" no programa, usar só uma lista para instruções não o permitirá.</p>
 <hr>
-<p>A função <code>runStmInAM3</code> é a equivalente de <code>runStmInAM1</code> em AM3.</p>
+<p>As funções <code>runStmInAM2/runStmInAM3</code> são as equivalentes de <code>runStmInAM1</code> em AM2/AM3.</p>
 
 </div>
 </div>
@@ -14241,7 +14466,9 @@ porque no caso das instruções de salto em que é possível "regredir" no progr
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-Haskell"><pre><span></span><span class="nf">initConfigAM3</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">AM3Config</span><span class="p">,</span> <span class="kt">Env</span><span class="p">,</span> <span class="kt">AM3AnnotatedProgram</span><span class="p">)</span>
+<div class=" highlight hl-Haskell"><pre><span></span><span class="nf">initConfigAM3</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">AM2Config</span><span class="p">,</span> <span class="kt">Env</span><span class="p">,</span> <span class="kt">AM2AnnotatedProgram</span><span class="p">)</span>
+
+<span class="nf">initConfigAM3</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">AM3Config</span><span class="p">,</span> <span class="kt">Env</span><span class="p">,</span> <span class="kt">AM3AnnotatedProgram</span><span class="p">)</span>
 <span class="nf">initConfigAM3</span> <span class="n">initSt</span> <span class="n">stm</span> <span class="ow">=</span>
     <span class="kr">let</span> <span class="n">code</span> <span class="ow">::</span> <span class="kt">AM3Code</span>
         <span class="n">envSt</span> <span class="ow">::</span> <span class="kt">EnvStateAM3</span>
@@ -14259,6 +14486,7 @@ porque no caso das instruções de salto em que é possível "regredir" no progr
 <span class="c1">-- Devolve as variáveis usadas no programa, e os valores que estavam nas respetivas</span>
 <span class="c1">-- posições de memória aquando da terminação da execução.</span>
 <span class="c1">-- Pode não terminar! (Halting problem).</span>
+<span class="nf">runStmInAM2</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">Var</span> <span class="kt">Z</span>
 <span class="nf">runStmInAM3</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stm</span> <span class="ow">-&gt;</span> <span class="kt">M</span><span class="o">.</span><span class="kt">Map</span> <span class="kt">Var</span> <span class="kt">Z</span>
 </pre></div>
 
@@ -14313,6 +14541,21 @@ porque no caso das instruções de salto em que é possível "regredir" no progr
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Refer&#234;ncias">Refer&#234;ncias<a class="anchor-link" href="#Refer&#234;ncias">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>[1] Nielson, H. R., &amp; Nielson, F. (2007). Semantics with Applications: An Appetizer (Undergraduate Topics in Computer Science) (2007th ed.). Springer London.</p>
+
+</div>
+</div>
 </div>
     </div>
   </div>
